@@ -43,14 +43,16 @@
     <script type="module">
         // Import and initialize ContentLoader
         import ContentLoader from './js/contentLoader.js';
-        
         let loader;
-        
+
         document.addEventListener('DOMContentLoaded', () => {
             loader = new ContentLoader();
             
-            // Load initial content
-            loader.loadContent('home');
+            // Load initial content based on URL hash or default to home
+            const initialPage = window.location.hash.slice(1) || 'home';
+            loader.loadContent(initialPage);
+            const initialButton = document.querySelector(`button[data-page="${initialPage}"]`);
+            if (initialButton) updateActiveButton(initialButton);
             
             // Add click handlers to buttons
             document.querySelectorAll('.buttons button').forEach(button => {

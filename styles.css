@@ -13,8 +13,13 @@ body {
     text-align: center;
     background-color: #f4f4f9;
     color: #333;
-    margin: 0;
-    padding: 0;
+    margin: 0;    
+    padding: 0px 300px;
+    /* text-align: justify; */
+}
+
+#content-area p {
+    text-align: justify;
 }
 
 /* Styles for the Body Text */
