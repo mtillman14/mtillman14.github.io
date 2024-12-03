@@ -27,7 +27,7 @@ author:
   bio              : "PhD in biomechanics interested in improving movement through data analysis."
   location         : "Chicago, IL"
   employer         : "Shirley Ryan Ability Lab"
-  uri              : "mitchelltillman.com" # URL
+  uri              : "" # URL
   email            : "none@example.org" 
 
   # Academic websites
@@ -58,7 +58,7 @@ author:
   keybase          : # Username
   instagram        : # Username
   lastfm           : # Username
-  linkedin         : "mitchelltillman/" # Username
+  linkedin         : "mitchelltillman" # Username
   mastodon         : # URL
   medium           : # URL
   pinterest        : # Username
