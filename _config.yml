@@ -21,13 +21,13 @@ repository               : "mtillman14/mtillman14.github.io"
 #               Additional customization can be done by editing /_includes/author-profile.html
 author:
   # Biographic information
-  avatar           : "profile_photo.jpeg"
+  avatar           : "profile_photo_square.jpeg"
   name             : "Mitchell Tillman"
   pronouns         : "he/him" 
   bio              : "PhD in biomechanics interested in improving movement through data analysis."
   location         : "Chicago, IL"
   employer         : "Shirley Ryan Ability Lab"
-  uri              : "" # URL
+  uri              : "www.mitchelltillman.com" # URL
   email            : "none@example.org" 
 
   # Academic websites
