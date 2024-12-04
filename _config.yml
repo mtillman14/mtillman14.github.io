@@ -8,9 +8,9 @@
 
 # Basic Site Settings
 locale                   : "en-US"
-title                    : "Mitchell Tillman, PhD"
+title                    : "Mitchell Tillman"
 title_separator          : "-"
-name                     : &name "Mitchell Tillman"
+name                     : &name "Mitchell Tillman, PhD"
 description              : &description "PhD in biomechanics"
 url                      : # the base hostname & protocol for your site e.g. "https://[your GitHub username].github.io"
 baseurl                  : "" # the subpath of your site, e.g. "/blog"
@@ -24,10 +24,10 @@ author:
   avatar           : "profile_photo_square.png"
   name             : "Mitchell Tillman"
   pronouns         : "he/him" 
-  bio              : "PhD in biomechanics interested in improving movement through data analysis."
+  bio              : "PhD in biomechanics trying to improve movement through data analysis."
   location         : "Chicago, IL"
   employer         : "Shirley Ryan Ability Lab"
-  uri              : "www.mitchelltillman.com" # URL
+  uri              : "" # URL
   email            : "none@example.org" 
 
   # Academic websites
@@ -76,12 +76,12 @@ author:
 
 # Publication Category - The following the list of publication categories and their headings
 publication_category:
-  books:
-    title: 'Books'
+  # books:
+  #   title: 'Books'
   manuscripts:
     title: 'Journal Articles'    
   conferences:
-    title: 'Conference Papers'
+    title: 'Conference Presentations'
 
 # Site Settings
 teaser                   :  # filename of teaser fallback teaser image placed in /images/, .e.g. "500x300.png"
