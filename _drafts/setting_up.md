@@ -16,3 +16,6 @@ tags:
 In the `publist` dictionary definition, comment out the "proceeding" key. Change the value of `["journal"]["file"]` to `output.bib`.
 
 Also, by default this .ipynb file does not work because it does not create a "category" field, which is required for the publication to be listed.
+Valid "category" fields appear to be `manuscripts` for a "Journal Articles" title, `conferences` for a "Conference Presentations" title.
+
+I also added the paperurl field. Unfortunately right now I have to manually add the PDF's. Maybe could be automated from Zotero in the future.
