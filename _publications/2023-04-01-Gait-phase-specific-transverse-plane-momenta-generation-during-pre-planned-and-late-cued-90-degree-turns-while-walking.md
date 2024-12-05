@@ -1,7 +1,7 @@
 ---
 title: "Gait-Phase Specific Transverse-Plane Momenta Generation during Pre-Planned and Late-Cued 90 Degree Turns While Walking"
 collection: publications
-category: manuscript
+category: manuscripts
 permalink: /publication/2023-04-01-Gait-Phase-Specific-Transverse-Plane-Momenta-Generation-during-Pre-Planned-and-Late-Cued-90-Degree-Turns-While-Walking
 date: 2023-04-01
 venue: 'Scientific Reports'

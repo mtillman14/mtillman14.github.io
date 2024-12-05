@@ -1,7 +1,7 @@
 ---
 title: "Frontal Plane Balance during Pre-Planned and Late-Cued 90 Degree Turns While Walking"
 collection: publications
-category: manuscript
+category: manuscripts
 permalink: /publication/2022-08-01-Frontal-Plane-Balance-during-Pre-Planned-and-Late-Cued-90-Degree-Turns-While-Walking
 date: 2022-08-01
 venue: 'Journal of Biomechanics'
