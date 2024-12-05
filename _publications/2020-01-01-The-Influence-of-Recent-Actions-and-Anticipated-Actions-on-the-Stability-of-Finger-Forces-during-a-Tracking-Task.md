@@ -1,6 +1,7 @@
 ---
 title: "The Influence of Recent Actions and Anticipated Actions on the Stability of Finger Forces during a Tracking Task"
 collection: publications
+category: manuscript
 permalink: /publication/2020-01-01-The-Influence-of-Recent-Actions-and-Anticipated-Actions-on-the-Stability-of-Finger-Forces-during-a-Tracking-Task
 date: 2020-01-01
 venue: 'Motor Control'
