@@ -8,7 +8,7 @@ categories:
 tags:
   - edge case
 ---
-# Works
+# Publications
 1. To make OrcidToBib.ipynb properly generate the output.bib file, the "citation" field of the work must be filled in on orcid.org using the Bibtex format. If not, it won't be properly added to the output.bib file. The Bibtex formatted citation can be found by right clicking the item in Zotero with the Better Bibtex plugin installed, and clicking "copy bibtex to clipboard".
 
 2. Use the PubsFromBib.ipynb to convert the .bib file to the .md files that will be rendered on the website. Note that by default you will get an error about a missing `pkg_resources` package. Run `pip install setuptools` to fix this.
@@ -19,3 +19,7 @@ Also, by default this .ipynb file does not work because it does not create a "ca
 Valid "category" fields appear to be `manuscripts` for a "Journal Articles" title, `conferences` for a "Conference Presentations" title.
 
 I also added the paperurl field. Unfortunately right now I have to manually add the PDF's. Maybe could be automated from Zotero in the future.
+
+# Talks
+1. Create a new `talks.csv` file and populate it with all of the talks you've given.
+2. In the third cell, change the first line to `talks = pd.read_csv("talks.csv")` and run all of the cells.
