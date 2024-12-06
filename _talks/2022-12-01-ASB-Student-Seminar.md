@@ -8,4 +8,6 @@ date: 2022-12-01
 location: "Virtual"
 ---
 
+[More information here](https://www.youtube.com/watch?v=D6GV7sVvbsA&t=0s)
+
 Oral presentation by Mitchell Tillman
