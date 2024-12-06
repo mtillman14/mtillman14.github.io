@@ -21,5 +21,5 @@ Valid "category" fields appear to be `manuscripts` for a "Journal Articles" titl
 I also added the `paperurl` field. Unfortunately right now I have to manually add the PDF's. Maybe could be automated from Zotero in the future.
 
 # Talks
-1. Create a new `talks.csv` file and populate it with all of the talks you've given.
+1. Create a new `talks.csv` file and populate it with all of the talks given. For the url slug, I just used the abbreviation of the venue.
 2. In the third cell, change the first line to `talks = pd.read_csv("talks.csv")` and then run all of the cells.
