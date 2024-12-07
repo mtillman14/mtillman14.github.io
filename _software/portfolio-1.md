@@ -1,7 +1,7 @@
 ---
-title: "software item number 1"
-excerpt: "Short description of software item number 1<br/><img src='/images/500x300.png'>"
+title: "Circle in Convex Hull"
+excerpt: "Determine the largest circle in a 2D convex hull. <a href="https://www.mathworks.com/matlabcentral/fileexchange/78408-maxcircleinconvexpoly" Find it on the MATLAB File Exchange</a><br/><img src='/images/software/max_circle_in_convex_poly.png'>"
 collection: software
 ---
 
-This is an item in your software. It can be have images or nice text. If you name the file .md, it will be parsed as markdown. If you name the file .html, it will be parsed as HTML. 
+Determine the largest circle in a 2D convex hull. Originally developed to provide a sense of scale of the center of mass distance from the edges of base of support during human balance studies.
