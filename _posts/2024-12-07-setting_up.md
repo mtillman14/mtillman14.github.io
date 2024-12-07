@@ -1,10 +1,10 @@
 ---
 layout: single
-title:  "Setting up this Website from Template"
+title:  "Setting up this website from template"
 # categories: 
 #   - Jekyll
-# tags:
-#   - edge case
+tags:
+  - documentation
 ---
 Setting up this personal website from the template at [academic pages](https://github.com/academicpages/academicpages.github.io) involves several steps:
 1. Set up localhost using ruby so that the website can be served for development.
