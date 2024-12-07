@@ -7,7 +7,7 @@ redirect_from:
   - /about.html
 ---
 
-I currently work at [Shirley Ryan Ability Lab](https://www.sralab.org/research/labs/max-nader-rto) in Chicago, IL USA studying whether electrical stimulation of the spinal cord can improve gait symmetry in stroke patients.
+I currently work as a post-doctoral fellow at [Shirley Ryan Ability Lab](https://www.sralab.org/research/labs/max-nader-rto) in Chicago, IL USA studying whether electrical stimulation of the spinal cord can improve gait symmetry in stroke patients.
 
 I attained my Ph.D. in Biomedical Engineering in 2024 from Stevens Institute of Technology working with [Dr. Antonia Zaferiou](https://www.stevens.edu/profile/azaferio). My dissertation focused on whole-body biomechanics of balance and momentum control during walking and 90 degree turning in healthy young and older adults. My 2019 M.S. degree from Purdue University working with [Dr. Satyajit Ambike](https://www.purdue.edu/hhs/hk/Biomechanics-MotorBehavior/about/dr-satyajit-ambike/) focused on the effect of anticipation on control of stability.
 
