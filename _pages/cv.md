@@ -1,4 +1,4 @@
-<!-- ---
+---
 layout: archive
 title: "CV"
 permalink: /cv/
@@ -8,6 +8,8 @@ redirect_from:
 ---
 
 {% include base_path %}
+
+[Download and view my CV here](http://mtillman14.github.io/files/cv.pdf)
 
 Education
 ======
@@ -61,4 +63,4 @@ Teaching
   
 Service and leadership
 ======
-* Currently signed in to 43 different slack teams -->
+* Currently signed in to 43 different slack teams
