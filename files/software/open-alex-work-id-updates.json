@@ -1,0 +1,18 @@
+{
+    "addons": {
+      "open-alex-work-id@mitchelltillman.com": {
+        "updates": [
+          {
+            "version": "1.0",
+            "update_link": "https://github.com/mtillman14/open-alex-work-id/releases/download/v1.0/open-alex-work-id-1.0.xpi",
+            "update_hash": "sha256:e37a9604ff3c27cd78d073242db555ba6dbf7a0ea17bd5986ff4872b25d24aa6",
+            "applications": {
+              "zotero": {
+                "strict_min_version": "6.999"
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
