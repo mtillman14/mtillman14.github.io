@@ -23,6 +23,8 @@ However, I continue to struggle to be able to visualize the graphs that I create
 
 6. Connectivity-based sizing - for some purposes, it is helpful to make more strongly connected/central nodes show larger, to reflect their integral status
 
+7. Visualized redundant connections between the same two nodes. If two nodes are connected to each other more than once, it is often desirable for the visualization to reflect that fact
+
 I have attempted to use several existing graph visualization tools:
 
 ## [cytoscape.js](https://js.cytoscape.org)

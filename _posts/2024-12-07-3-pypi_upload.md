@@ -25,6 +25,8 @@ python3 -m pip install --upgrade twine
 python3 -m twine upload --repository testpypi dist/*
 ```
 
+December 23, 2024 edit: If receiving an error during the twine upload process, run `pip install pkginfo --upgrade` to update `pkginfo`.
+
 ## Install from Test PyPI
 - Install the package from Test PyPI but installs any dependencies from the **main PyPI** repository: `python -m pip install --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple <package_name>`
 
