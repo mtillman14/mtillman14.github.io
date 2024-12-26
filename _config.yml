@@ -145,6 +145,7 @@ social:
 
 
 # Analytics
+# Got the Google Analytics 4 info from: https://github.com/academicpages/academicpages.github.io/issues/265
 analytics:
   provider               :  "custom" # false (default), "google", "google-universal", "google-analytics-4", "custom"
   google:
