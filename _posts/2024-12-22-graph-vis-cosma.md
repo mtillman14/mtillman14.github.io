@@ -35,3 +35,5 @@ Another approach was to generate a static svg of a graph, in a similar fashion a
 
 # A New Approach: [Cosma](https://cosma.arthurperret.fr/index.html)
 I recently discovered Cosma, a relatively new graph visualization tool that at first glance appears to meet all of my above criteria! I need to try out this tool and will report back. To use it, I need to add a new method to my [base-dag](https://github.com/ResearchOS/base-dag) project's DAG class to save each node as a .md file with YAML headers and links to the connected nodes.
+
+More to come here after I test out Cosma!
