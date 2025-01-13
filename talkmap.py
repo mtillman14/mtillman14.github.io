@@ -11,9 +11,12 @@
 #
 # Requires: glob, getorg, geopy
 
+import os
 import glob
 import getorg
 from geopy import Nominatim
+
+os.chdir('_talks') # Navigate to the _talks directory
 
 g = glob.glob("*.md")
 
@@ -42,6 +45,6 @@ for file in g:
 m = getorg.orgmap.create_map_obj()
 getorg.orgmap.output_html_cluster_map(location_dict, folder_name="../talkmap", hashed_usernames=False)
 
-
+os.chdir('..') # Navigate back to the main directory
 
 

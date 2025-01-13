@@ -5,7 +5,6 @@ type: "Talk"
 permalink: /talks/2022-12-01-ASB-Student-Seminar
 venue: "American Society of Biomechanics Student Seminar Series"
 date: 2022-12-01
-location: "Virtual"
 ---
 
 [Watch the talk here](https://www.youtube.com/watch?v=D6GV7sVvbsA&t=0s)

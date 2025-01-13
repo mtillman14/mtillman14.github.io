@@ -5,7 +5,7 @@ type: "Seminar"
 permalink: /talks/2022-02-02-Dept-Seminar
 venue: "Department Seminar"
 date: 2022-02-02
-location: "Hoboken NJ USA"
+location: "Hoboken, NJ USA"
 ---
 
 Oral presentation by Mitchell Tillman

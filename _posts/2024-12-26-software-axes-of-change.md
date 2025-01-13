@@ -5,9 +5,9 @@ tags:
   - documentation
 ---
 
-Software is tough to design, not because programming is difficult, but because the technical requirements and user input are subject to change. As someone who is not a software engineer by training, cutting through the decision paralysis to design programs to accommodate change is one of the most difficult parts of programming. 
+Software is tough to design - not because programming itself is difficult, but because the technical requirements and user input are subject to change. As someone who is not a software engineer by training, cutting through the decision paralysis to design programs to accommodate change is one of the most difficult parts of programming. 
 
-Seeing as I am not an expert, take this post with a grain of salt, as it is primarily serving to document my thinking on software design.
+Seeing as I am not an expert, take this post with a ***heavy*** grain of salt, as it is primarily serving to document my thinking on software design.
 
 ## Types of Change
 Change can take several forms, and it is important to define the types of change that are possible in a given program: 
