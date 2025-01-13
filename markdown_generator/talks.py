@@ -33,7 +33,7 @@ import os
 
 # In[3]:
 
-talks = pd.read_csv("talks.tsv", sep="\t", header=0)
+talks = pd.read_csv("talks_new.csv")
 talks
 
 
@@ -62,6 +62,10 @@ def html_escape(text):
 
 # In[5]:
 
+talk_url_str_dict = {}
+talk_url_str_dict["Talk"] = "Watch the talk here"
+# talk_url_str_dict["Poster"] = "Download the poster here"
+
 loc_dict = {}
 
 for row, item in talks.iterrows():
@@ -89,12 +93,16 @@ for row, item in talks.iterrows():
     if len(str(item.location)) > 3:
         md += 'location: "' + str(item.location) + '"\n'
            
-    md += "---\n"
+    md += "---\n"    
     
-    
-    if len(str(item.talk_url)) > 3:
-        md += "\n[More information here](" + item.talk_url + ")\n" 
-        
+    print("Talk URL", item.talk_url)
+    if len(str(item.talk_url)) > 3: # Has URL
+        md += f"\n[{talk_url_str_dict[item.type]}](" + item.talk_url + ")\n"
+    elif os.path.exists(os.path.join(os.path.dirname(os.getcwd()),'files',item.type.lower(),md_filename.replace('.md','.pdf'))): # Has file        
+        item.talk_url = f"http://mtillman14.github.io/files/{item.type.lower()}/{md_filename.replace('.md','.pdf')}"
+        md += f"\n[Download here]({item.talk_url})\n"
+
+    print("File ", md_filename, "Description", item.description)
     
     if len(str(item.description)) > 3:
         md += "\n" + html_escape(item.description) + "\n"

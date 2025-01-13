@@ -21,7 +21,7 @@ os.chdir('_talks') # Navigate to the _talks directory
 g = glob.glob("*.md")
 
 
-geocoder = Nominatim()
+geocoder = Nominatim(user_agent="myGeocoder")
 location_dict = {}
 location = ""
 permalink = ""
@@ -29,6 +29,7 @@ title = ""
 
 
 for file in g:
+    print(file)
     with open(file, 'r') as f:
         lines = f.read()
         if lines.find('location: "') > 1:
