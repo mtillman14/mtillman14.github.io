@@ -16,7 +16,7 @@
   }
 }
 
-.layout--wide{
+.wide {
   .page {
     @include breakpoint($large) {
       padding-right: 0;
