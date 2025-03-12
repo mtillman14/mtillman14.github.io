@@ -16,9 +16,7 @@
   }
 }
 
-.page {
-  width: calc(100% - #{$right-sidebar-width-narrow});
-}
+$max-width:100%;
 
 .page {
   @include breakpoint($large) {
