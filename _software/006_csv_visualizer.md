@@ -6,6 +6,9 @@ layout: single
 classes: wide
 ---
 
-<div style="width: 100%; height: 800px;">
+This Shiny app allows you to visualize CSV data interactively.
+
+<a href="/apps/csv_data_visualizer/" class="btn btn--primary" target="_blank">Launch App</a>
+<!-- <div style="width: 100%; height: 800px;">
   <iframe src="/assets/shinylive/csv_data_visualizer/index.html" style="width: 100%; height: 100%; border: none;"></iframe>
-</div>
+</div> -->
