@@ -2,7 +2,7 @@
 title: "CSV Data Visualizer"
 excerpt: "R Shiny app to visualize data in CSV format. [GitHub](https://github.com/mtillman14/CSV-Data-Visualizer)"
 collection: software
-layout: wide
+layout: single
 classes: wide
 ---
 
