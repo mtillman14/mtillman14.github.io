@@ -1,0 +1,71 @@
+---
+layout: single
+title:  "Setting up a Personal Media Server"
+tags:
+  - documentation
+  - personal
+---
+
+Streaming services, like most everything else these days, are getting worse. More expensive, lower quality offerings, algorithmic suggestions, and content is often split across multiple streaming platforms altogether. After coming across a [great article about how to set up my own home media server](https://chadnauseam.com/coding/random/setting-up-a-media-server), I'm going to roll up my sleeves and see if I can figure out how to do this! Based on my prior good experiences with the [Mullvad VPN](https://mullvad.net/en), I am going to use that throughout this process to anonymize my browsing activity.
+
+Based on the chadnauseam.com article, there are several parts that need to be set up for this process:
+1. A server (I am using an old Mac laptop)
+2. `Radarr` and `Sonarr` for movies and shows, respectively
+3. A torrent client. Reddit indicates that `qBitTorrent` is best
+4. `Prowlarr` to manage torrent indexes
+5. `Jellyseer` to let non-techies easily request movies to be added to the library
+6. `Nginx` and `Let's Encrypt` to set up more user-friendly URLs for the server
+7. A transcoder/compressor (optional)
+8. `SwiftFin` iOS app to watch content on your phone
+9. `mdblist.com` for creating a `Trakt` list of recent popular movies
+10. `Trakt` for creating a list of movies that can be automatically downloaded with Radarr
+
+# Before Getting Started
+It is worth noting that torrenting content is illegal. Therefore, to hide your web traffic from your ISP and anyone else, use a reliable VPN. I suggest [Mullvad](https://mullvad.net/en), as they don't keep any records.
+
+# 1. Server
+The dang Mac seems to be pretty much dead after wiping it
+
+# 2a. Radarr Install
+1. Download Radarr from `https://radarr.video/#download`. Follow the steps, including running the Terminal command to self-sign the Radarr app: `codesign --force --deep -s - /Applications/Radarr.app && xattr -rd com.apple.quarantine /Applications/Radarr.app`.
+2. Browse to `http://localhost:7878` to start using Radarr
+3. Set authentication to `Basic (Browser Popup)` and create a username and password.
+4. An `Indexer` is needed to make Radarr work. However, none are included by default. Therefore, use Prowlarr, an indexer management tool.
+
+# 2b. Sonarr Install
+1. Download Sonarr from `https://sonarr.tv/#downloads-macos`. Follow the steps, including running the Terminal command to self-sign the Sonarr app: `codesign --force --deep -s - /Applications/Sonarr.app && xattr -rd com.apple.quarantine /Applications/Sonarr.app`.
+2. Browse to `http://localhost:8989` to start using Sonarr
+3. Set authentication to `Basic (Browser Popup)` and create a username and password.
+4. An `Indexer` is needed to make Sonarr work. However, none are included by default. Therefore, use Prowlarr, an indexer management tool.
+
+# 3. Prowlarr
+1. Download Prowlarr from here: `https://prowlarr.com/#downloads-v3-macos`. Follow the steps, including running the Terminal command to self-sign the Prowlarr app: `codesign --force --deep -s - /Applications/Prowlarr.app && xattr -rd com.apple.quarantine /Applications/Prowlarr.app`.
+2. Browse to `http://localhost:9696` to start using Prowlarr
+3. Set authentication to `Basic (Browser Popup)` and create a username and password.
+4. Note that many of these torrents are protected by CloudFlare (Captchas). If after clicking `Test` a CloudFlare related error message appears, try picking a different base URL for that torrent.
+5. After succesfully finding a torrent, go to Settings > Apps to connect Radarr and Sonarr. The API key can be found in the respective apps under Settings > General > API Key
+
+# 4. Download qBittorrent
+1. Sonarr and Radarr need a "download client" to actually do the downloading from the indexers that we just added. Download qBittorrent here: `https://www.fosshub.com/qBittorrent.html`
+2. Follow the instructions on this page to set up qBittorrent: `https://trash-guides.info/Downloaders/qBittorrent/Basic-Setup/`
+
+# 5. Add qBittorrent to Sonarr and Radarr
+1. In Settings > Download Clients, click the "+" and add `qBittorrent`. Add the username and password that you set during the qBittorrent setup process. When successful, you will see a new "radarr" and "tv-sonarr" category in the qBittorrent app.
+
+# 6. Jellyseerr
+1. Download Jellyseer from: `https://docs.jellyseerr.dev/getting-started/docker`
+2. To run the Docker command, first open the Docker desktop app to start the Docker daemon.
+3. Create a folder at `/Users/username/jellyseer/config`
+4. Run this command: 
+```
+docker run -d \
+  --name jellyseerr \
+  -e LOG_LEVEL=debug \
+  -e TZ=Asia/Tashkent \
+  -e PORT=5055 `#optional` \
+  -p 5055:5055 \
+  -v /path/to/appdata/config:/app/config \
+  --restart unless-stopped \
+  fallenbagel/jellyseerr
+```
+5. Open Jellyseerr using `localhost:5055`. Click Jellyfin to set up.

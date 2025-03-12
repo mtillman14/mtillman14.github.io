@@ -21,3 +21,26 @@ First and foremost, the [official GitHub documentation](https://docs.github.com/
 When you have a merge conflict, you can use `git status` to see which files have conflicts.
 
 "Current change" refers to the modifications made on your local branch, while "incoming change" refers to the modifications made on the remote branch.
+
+# How to Create a New Local and Remote Repository
+## 1. Download the GitHub CLI
+```bash
+brew install gh
+```
+
+## 2. Set global git config
+Before creating new repos, you should run `git config --global init.defaultBranch "main"` to ensure that your branch naming conventions are aligned with current best practices.
+
+Also, run `git config --global push.autoSetupRemote true` to automatically set up a remote for the main branch when you create a new repository.
+
+## 3. Initialize the local repository
+```bash
+git init
+```
+I like to add the local repository rather than creating the repo on GitHub and the computer at the same time. It's a more reliable workflow, and makes it more explicit which folder the repo will be created in.
+
+## 4. Create the remote repository on GitHub
+```bash
+gh repo create "REPO_NAME" --public --source .
+```
+By having the `--source .` flag, the current directory will be used as the source for the new repository.

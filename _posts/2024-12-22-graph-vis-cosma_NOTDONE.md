@@ -33,6 +33,12 @@ This is quite a powerful framework for graph visualization, however it is not st
 ## [dagviz](https://github.com/WimYedema/dagviz)
 Another approach was to generate a static svg of a graph, in a similar fashion as Git's branching graphs. Simple enough to get an svg output from, but the lack of interactivity or customizability is really a deal breaker.
 
+## [VOSviewer](https://www.vosviewer.com)
+Intended primarily for visualizing bibliometric networks, the desktop app version of this tool is intended to work directly with bibliographic APIs.
+
+## [Python iGraph](https://github.com/igraph/python-igraph)
+Library to both create, manipulate, and visualize graphs. However, the visualizations are static and not interactive.
+
 # A New Approach: [Cosma](https://cosma.arthurperret.fr/index.html)
 I recently discovered Cosma, a relatively new graph visualization tool that at first glance appears to meet all of my above criteria! I need to try out this tool and will report back. To use it, I need to add a new method to my [base-dag](https://github.com/ResearchOS/base-dag) project's DAG class to save each node as a .md file with YAML headers and links to the connected nodes.
 
