@@ -8,6 +8,7 @@ tags:
 
 Streaming services, like most everything else these days, are getting worse. More expensive, lower quality offerings, algorithmic suggestions, and content is often split across multiple streaming platforms altogether. After coming across a [great article about how to set up my own home media server](https://chadnauseam.com/coding/random/setting-up-a-media-server), I'm going to roll up my sleeves and see if I can figure out how to do this! Based on my prior good experiences with the [Mullvad VPN](https://mullvad.net/en), I am going to use that throughout this process to anonymize my browsing activity.
 
+# Setting up the Server for the First Time
 Based on the chadnauseam.com article, there are several parts that need to be set up for this process:
 1. A server (I am using an old Mac laptop)
 2. `Radarr` and `Sonarr` for movies and shows, respectively
@@ -20,43 +21,44 @@ Based on the chadnauseam.com article, there are several parts that need to be se
 9. `mdblist.com` for creating a `Trakt` list of recent popular movies
 10. `Trakt` for creating a list of movies that can be automatically downloaded with Radarr
 
-# Before Getting Started
+## Before Getting Started
 It is worth noting that torrenting content is illegal. Therefore, to hide your web traffic from your ISP and anyone else, use a reliable VPN. I suggest [Mullvad](https://mullvad.net/en), as they don't keep any records.
 
-# 1. Server
-The dang Mac seems to be pretty much dead after wiping it
+# Installations and Configuration
+## Jellyfin
+Go to `https://jellyfin.org/downloads/` and download the latest version of Jellyfin for macOS. Follow the instructions to install it. After installation, open the app and follow the setup wizard. You will need to create a username and password.
+Once the setup is complete, you can access the Jellyfin server by going to `http://localhost:8096` in your web browser.
 
-# 2a. Radarr Install
+## Radarr
 1. Download Radarr from `https://radarr.video/#download`. Follow the steps, including running the Terminal command to self-sign the Radarr app: `codesign --force --deep -s - /Applications/Radarr.app && xattr -rd com.apple.quarantine /Applications/Radarr.app`.
 2. Browse to `http://localhost:7878` to start using Radarr
 3. Set authentication to `Basic (Browser Popup)` and create a username and password.
 4. An `Indexer` is needed to make Radarr work. However, none are included by default. Therefore, use Prowlarr, an indexer management tool.
 
-# 2b. Sonarr Install
+## Sonarr
 1. Download Sonarr from `https://sonarr.tv/#downloads-macos`. Follow the steps, including running the Terminal command to self-sign the Sonarr app: `codesign --force --deep -s - /Applications/Sonarr.app && xattr -rd com.apple.quarantine /Applications/Sonarr.app`.
 2. Browse to `http://localhost:8989` to start using Sonarr
 3. Set authentication to `Basic (Browser Popup)` and create a username and password.
 4. An `Indexer` is needed to make Sonarr work. However, none are included by default. Therefore, use Prowlarr, an indexer management tool.
 
-# 3. Prowlarr
+## Prowlarr
 1. Download Prowlarr from here: `https://prowlarr.com/#downloads-v3-macos`. Follow the steps, including running the Terminal command to self-sign the Prowlarr app: `codesign --force --deep -s - /Applications/Prowlarr.app && xattr -rd com.apple.quarantine /Applications/Prowlarr.app`.
 2. Browse to `http://localhost:9696` to start using Prowlarr
 3. Set authentication to `Basic (Browser Popup)` and create a username and password.
 4. Note that many of these torrents are protected by CloudFlare (Captchas). If after clicking `Test` a CloudFlare related error message appears, try picking a different base URL for that torrent.
 5. After succesfully finding a torrent, go to Settings > Apps to connect Radarr and Sonarr. The API key can be found in the respective apps under Settings > General > API Key
+6. Click "Sync App Indexers" to add all the indexers to Radarr and Sonarr. You should now see all of the selected indexers in the Indexers tab of Radarr and Sonarr.
 
-# 4. Download qBittorrent
+## qBittorrent
 1. Sonarr and Radarr need a "download client" to actually do the downloading from the indexers that we just added. Download qBittorrent here: `https://www.fosshub.com/qBittorrent.html`
+2. It is from an "unidentified developer" so be sure to click `Open Anyway` in the Security & Privacy section of System Preferences.
 2. Follow the instructions on this page to set up qBittorrent: `https://trash-guides.info/Downloaders/qBittorrent/Basic-Setup/`
 
-# 5. Add qBittorrent to Sonarr and Radarr
-1. In Settings > Download Clients, click the "+" and add `qBittorrent`. Add the username and password that you set during the qBittorrent setup process. When successful, you will see a new "radarr" and "tv-sonarr" category in the qBittorrent app.
-
-# 6. Jellyseerr
+## Jellyseerr
 1. Download Jellyseer from: `https://docs.jellyseerr.dev/getting-started/docker`
 2. To run the Docker command, first open the Docker desktop app to start the Docker daemon.
-3. Create a folder at `/Users/username/jellyseer/config`
-4. Run this command: 
+3. Create a folder alongside the `media/` folder called `jellyseerr/`, and make a `/config` subfolder, so the full path would be, for example, `/Volumes/T5_SSD/data/jellyseerr/config`.
+4. Run this command, modifying the path in the `-v` option to the one you just created: 
 ```
 docker run -d \
   --name jellyseerr \
@@ -64,8 +66,118 @@ docker run -d \
   -e TZ=Asia/Tashkent \
   -e PORT=5055 `#optional` \
   -p 5055:5055 \
-  -v /path/to/appdata/config:/app/config \
+  -v /Volumes/T5_SSD/data/jellyseerr/config:/app/config \
   --restart unless-stopped \
   fallenbagel/jellyseerr
 ```
 5. Open Jellyseerr using `localhost:5055`. Click Jellyfin to set up.
+6. The URL that you need is the IP address from the `ifconfig` command (Mac) or `ipconfig /all` (Windows). The IP address will look like `192.168.0.XXX`. It will be under one of the `en#` entries. You just need to try different ones until one works.
+
+## Add qBittorrent to Sonarr and Radarr
+1. In Settings > Download Clients, click the "+" and add `qBittorrent`. Add the username and password that you set during the qBittorrent setup process. When successful, you will see a new "radarr" and "tv-sonarr" category in the qBittorrent app.
+
+# Restarting the server after restarting your computer
+1. Open the Jellyfin app, then browse to `http://localhost:8096`.
+2. Open the Radarr app, then browse to `http://localhost:7878`.
+3. Open the Sonarr app, then browse to `http://localhost:8989`.
+4. Open the Prowlarr app, then browse to `http://localhost:9696`.
+5. Open the qBittorrent app.
+6. Open Docker and make sure the Jellyseerr Docker container is running. Browse to `http://localhost:5055`.
+
+# Set up Jellyfin Remote Access
+## 1. Set up a domain name
+1. Register a domain name. I prefer namecheap.com
+
+## 2. Set up Cloudflare
+1. Set up a Cloudflare account. Select the free plan
+2. Add your domain to Cloudflare
+3. Update the nameservers on your domain registrar to the Cloudflare nameservers.
+4. Turn off DNSSEC on your domain registrar. Cloudflare provides instructions for each registrar.
+5. Replace the existing nameservers with the Cloudflare nameservers (copy and paste them from the Cloudflare dashboard). Wait for Cloudflare to verify the nameservers.
+
+## 3. Install the Cloudflare tunnel client
+1. Download Homebrew: `/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"`
+2. Install the Cloudflare tunnel client: `brew install cloudflared`. Verify the installation with `cloudflared --version`
+
+## 4. Authenticate the Cloudflare tunnel client
+1. Authenticate the Cloudflare tunnel client: `cloudflared tunnel login`
+2. You need to allow cookies for Cloudflare sign in to work properly.
+3. Click Authorize to allow permission for the tunnel.
+4. Saves the certificate to `~/.cloudflared/cert.pem`
+
+## 5. Create the Cloudflare tunnel
+`cloudflared tunnel create jellyfin-server`
+This creates a unique tunnel ID, and stores a JSON file at `~/.cloudflared/[UUID].json`
+
+## 6. Configure the Cloudflare tunnel
+Create a config file at `~/.cloudflared/config.yml`
+```yaml
+# The tunnel ID
+tunnel: jellyfin-server
+credentials-file: /Users/username/.cloudflared/[UUID].json
+
+# Ingress rules define where traffic gets routed
+ingress:
+  # Route traffic from your domain to Jellyfin
+  - hostname: jellyfin.pixelparty.club
+    service: http://localhost:8096
+  # Catch-all rule - return 404 for any other hostnames
+  - service: http_status:404
+```
+
+## 7. Create DNS records
+Connect the domain name to the tunnel
+```bash
+# Create a CNAME record pointing to your tunnel
+cloudflared tunnel route dns jellyfin-server jellyfin.pixelparty.club
+```
+
+## 8. Start the Cloudflare tunnel
+```bash
+cloudflared tunnel run jellyfin-server
+```
+
+## 9. Make the tunnel run automatically on startup
+```bash
+sudo cloudflared service install
+```
+
+## 10. Configure Jellyfin settings
+1. Log in to Jellyfin admin panel
+2. Go to Admin -> Dashboard -> Networking
+3. Under "Base URL" enter "/jellyfin" (for users to access `jellyfin.pixelparty.club`)
+4. Enable "Allow remote connections"
+5. Add Cloudflare's IP ranges to "LAN Networks" for proper client detection (optional)
+
+## 11. Set up authentication
+1. Create user accounts in Jellyfin for each person
+2. Enable Cloudflare Access (part of Cloudflare Zero Trust) for additional authentication:
+- In Cloudflare dashboard, go to Zero Trust -> Access
+- Create a new application for the Jellyfin domain
+- Configure authentication methods (email, social, etc.)
+
+# Set up Jellyseerr Remote Access
+## 1. Modify the Cloudflare config file
+Located at `~/.cloudflared/config.yml`:
+```yaml
+# The tunnel ID
+tunnel: jellyfin-server
+credentials-file: /Users/username/.cloudflared/[UUID].json
+
+# Ingress rules define where traffic gets routed
+ingress:
+  # Route traffic from your jellyfin domain to Jellyfin
+  - hostname: jellyfin.pixelparty.club
+    service: http://localhost:8096
+  # Route traffic from your jellyseerr domain to Jellyseerr
+  - hostname: jellyseerr.pixelparty.club
+    service: http://localhost:5055
+  # Catch-all rule - return 404 for any other hostnames
+  - service: http_status:404
+```
+
+## 2. Update the DNS route
+```bash
+cloudflared tunnel route dns jellyfin-server jellyseerr.pixelparty.club
+```
+Adds to (doesn't overwrite) the DNS routing set when setting up Jellyfin remote access
