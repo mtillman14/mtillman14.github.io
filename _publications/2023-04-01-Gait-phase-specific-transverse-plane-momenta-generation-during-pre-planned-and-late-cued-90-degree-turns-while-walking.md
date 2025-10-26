@@ -3,7 +3,7 @@ title: "Gait-Phase Specific Transverse-Plane Momenta Generation during Pre-Plann
 collection: publications
 category: manuscripts
 permalink: /publication/2023-04-01-Gait-Phase-Specific-Transverse-Plane-Momenta-Generation-during-Pre-Planned-and-Late-Cued-90-Degree-Turns-While-Walking
-date: 2023
+dates: 2023
 venue: 'Scientific Reports'
 authors: 'Tillman M, Molino J, Zaferiou, AM'
 doi: '10.1038/s41598-023-33667-1'

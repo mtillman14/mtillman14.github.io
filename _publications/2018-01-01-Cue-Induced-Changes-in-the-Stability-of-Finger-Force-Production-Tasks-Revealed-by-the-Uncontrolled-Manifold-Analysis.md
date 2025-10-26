@@ -3,7 +3,7 @@ title: "Cue-Induced Changes in the Stability of Finger Force-Production Tasks Re
 collection: publications
 category: manuscripts
 permalink: /publication/2018-01-01-Cue-Induced-Changes-in-the-Stability-of-Finger-Force-Production-Tasks-Revealed-by-the-Uncontrolled-Manifold-Analysis
-date: 2018
+dates: 2018
 venue: 'Journal of Neurophysiology'
 authors: 'Tillman M, Ambike S'
 doi: '10.1152/jn.00519.2017'

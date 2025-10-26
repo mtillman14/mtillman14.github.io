@@ -3,7 +3,7 @@ title: "The Influence of Recent Actions and Anticipated Actions on the Stability
 collection: publications
 category: manuscripts
 permalink: /publication/2020-01-01-The-Influence-of-Recent-Actions-and-Anticipated-Actions-on-the-Stability-of-Finger-Forces-during-a-Tracking-Task
-date: 2020
+dates: 2020
 venue: 'Motor Control'
 authors: 'Tillman M, Ambike S'
 doi: '10.1123/MC.2019-0124'

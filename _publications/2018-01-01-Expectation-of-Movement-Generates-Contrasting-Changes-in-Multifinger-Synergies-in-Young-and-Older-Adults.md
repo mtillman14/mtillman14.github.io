@@ -3,7 +3,7 @@ title: "Expectation of Movement Generates Contrasting Changes in Multifinger Syn
 collection: publications
 category: manuscripts
 permalink: /publication/2018-01-01-Expectation-of-Movement-Generates-Contrasting-Changes-in-Multifinger-Synergies-in-Young-and-Older-Adults
-date: 2018
+dates: 2018
 venue: 'Experimental Brain Research'
 authors: 'Tillman M, Ambike S'
 doi: '10.1007/s00221-018-5333-0'

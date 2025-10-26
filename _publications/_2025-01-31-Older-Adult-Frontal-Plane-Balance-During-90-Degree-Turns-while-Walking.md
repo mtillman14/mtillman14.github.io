@@ -3,7 +3,7 @@ title: "Older Adult Frontal Plane Balance During 90 Degree Turns while Walking"
 collection: publications
 category: manuscripts
 permalink: /publication/2025-01-31-Older-Adult-Frontal-Plane-Balance-During-90-Degree-Turns-while-Walking
-date: 2025
+dates: 2025
 venue: 'Journal of NeuroEngineering and Rehabilitation'
 authors: 'MISSING'
 doi: 'MISSING'

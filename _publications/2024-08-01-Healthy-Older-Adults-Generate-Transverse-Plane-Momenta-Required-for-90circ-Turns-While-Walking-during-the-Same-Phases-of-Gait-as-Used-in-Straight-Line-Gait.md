@@ -3,7 +3,7 @@ title: "Healthy Older Adults Generate Transverse-Plane Momenta Required for 90 D
 collection: publications
 category: manuscripts
 permalink: /publication/2024-08-01-Healthy-Older-Adults-Generate-Transverse-Plane-Momenta-Required-for-90circ-Turns-While-Walking-during-the-Same-Phases-of-Gait-as-Used-in-Straight-Line-Gait
-date: 2024
+dates: 2024
 venue: 'Journal of NeuroEngineering and Rehabilitation'
 authors: 'Tillman M, Liu JM, Hirsch ZM, Molino J, Zaferiou AM'
 doi: '10.1186/s12984-024-01437-3'

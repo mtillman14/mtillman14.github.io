@@ -3,7 +3,7 @@ title: "Real-Time Optical Motion Capture Balance Sonification System"
 collection: publications
 category: manuscripts
 permalink: /publication/2020-01-01-Real-Time-Optical-Motion-Capture-Balance-Sonification-System
-date: 2020
+dates: 2020
 venue: 'ACM International Conference Proceeding Series'
 authors: 'Tillman M, Dahl L, Knowlton CB, Zaferiou A'
 doi: '10.1145/3401956.3404244'
