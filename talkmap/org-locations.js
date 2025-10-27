@@ -10,6 +10,11 @@ var addressPoints = [
     -92.4630182
   ],
   [
+    "Arlington, VA USA",
+    38.8769326,
+    -77.0893094
+  ],
+  [
     "Hoboken NJ USA",
     40.7433066,
     -74.0323752
@@ -26,8 +31,8 @@ var addressPoints = [
   ],
   [
     "Dayton OH USA",
-    39.7589478,
-    -84.1916069
+    39.77944,
+    -84.199196
   ],
   [
     "Hoboken, NJ USA",
@@ -46,8 +51,8 @@ var addressPoints = [
   ],
   [
     "Miami, FL USA",
-    25.7820042,
-    -80.22256438834017
+    25.7741566,
+    -80.1935973
   ],
   [
     "Knoxville TN USA",
@@ -56,13 +61,8 @@ var addressPoints = [
   ],
   [
     "Boulder CO USA",
-    40.0149856,
-    -105.270545
-  ],
-  [
-    "Washington D.C. USA",
-    38.8950368,
-    -77.0365427
+    40.102555,
+    -105.3632079
   ],
   [
     "Vail CO USA",
@@ -73,6 +73,11 @@ var addressPoints = [
     "Chicago IL USA",
     41.8755616,
     -87.6244212
+  ],
+  [
+    "Santa Ana Pueblo, NM USA",
+    35.3464326,
+    -106.5261813
   ],
   [
     "NYC NY USA",
