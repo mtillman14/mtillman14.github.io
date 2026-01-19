@@ -5,19 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Shiny App</title>
     <script
-      src="./../shinylive/load-shinylive-sw.js"
+      src="./shinylive/load-shinylive-sw.js"
       type="module"
     ></script>
     <script type="module">
-      import { runExportedApp } from "./../shinylive/shinylive.js";
+      import { runExportedApp } from "./shinylive/shinylive.js";
       runExportedApp({
         id: "root",
         appEngine: "python",
-        relPath: "../",
+        relPath: "",
       });
     </script>
-    <link rel="stylesheet" href="./../shinylive/style-resets.css" />
-    <link rel="stylesheet" href="./../shinylive/shinylive.css" />
+    <link rel="stylesheet" href="./shinylive/style-resets.css" />
+    <link rel="stylesheet" href="./shinylive/shinylive.css" />
     
   </head>
   <body>
