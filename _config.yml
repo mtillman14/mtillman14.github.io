@@ -157,7 +157,6 @@ include:
   - .htaccess
   - _pages
   - files
-  - cosmed
 exclude:
   - "*.sublime-project"
   - "*.sublime-workspace"
@@ -185,7 +184,6 @@ exclude:
   - README
   - tmp
   - vendor
-  - cosmed/edit/**
 keep_files:
   - .git
   - .svn
