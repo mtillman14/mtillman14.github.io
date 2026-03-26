@@ -29,21 +29,39 @@ permalink = ""
 title = ""
 
 
-def get_locations(g: list) -> dict:
+def get_locations(g: list) -> tuple:
     location_dict = {}
+    venue_dict = {}  # Map location -> set of venues
     for file in g:
         print(file)
         with open(file, 'r') as f:
             lines = f.read()
+            location = ""
+            venue = ""
+
             if lines.find('location: "') > 1:
                 loc_start = lines.find('location: "') + 11
                 lines_trim = lines[loc_start:]
                 loc_end = lines_trim.find('"')
                 location = lines_trim[:loc_end]
 
-            if location == "Virtual":
+            if lines.find('venue: "') > 1:
+                ven_start = lines.find('venue: "') + 8
+                lines_trim = lines[ven_start:]
+                ven_end = lines_trim.find('"')
+                venue = lines_trim[:ven_end]
+
+            if not location or location == "Virtual":
                 continue
-                                       
+
+            if location not in venue_dict:
+                venue_dict[location] = set()
+            if venue:
+                venue_dict[location].add(venue)
+
+            if location in location_dict:
+                continue
+
             try:
                 time.sleep(1)  # To respect Nominatim's usage policy
                 location_dict[location] = geocoder.geocode(location)
@@ -58,12 +76,38 @@ def get_locations(g: list) -> dict:
                 continue
 
             print(location, "\n", location_dict[location])
-    return location_dict
+    return location_dict, venue_dict
 
 
-location_dict = get_locations(g)
+location_dict, venue_dict = get_locations(g)
 m = getorg.orgmap.create_map_obj()
 getorg.orgmap.output_html_cluster_map(location_dict, folder_name="../talkmap", hashed_usernames=False)
+
+
+def add_venues_to_org_locations(venue_dict):
+    """Post-process org-locations.js to add venue as a 4th element in each array."""
+    js_path = os.path.join('..', 'talkmap', 'org-locations.js')
+    with open(js_path, 'r') as f:
+        content = f.read()
+
+    import json
+    # Parse the JS array from the file
+    start = content.find('[')
+    end = content.rfind(']') + 1
+    data = json.loads(content[start:end])
+
+    # Add venue to each entry
+    for entry in data:
+        location = entry[0]
+        venues = venue_dict.get(location, set())
+        entry.append(", ".join(sorted(venues)) if venues else "")
+
+    # Write back
+    with open(js_path, 'w') as f:
+        f.write("var addressPoints = " + json.dumps(data, indent=2) + ";\n")
+
+
+add_venues_to_org_locations(venue_dict)
 
 # Post-process the generated map.html to customize it
 def customize_map_html():
@@ -104,9 +148,9 @@ def customize_map_html():
         for (var i = 0; i < addressPoints.length; i++) {
             var a = addressPoints[i];
             var title = a[0];
-            var description = a[3]; // Add this if you want the extra field
+            var venue = a[3];
             var marker = L.marker(new L.LatLng(a[1], a[2]), { title: title });
-            marker.bindPopup("<b>" + title + "</b><br>" + description); // Modified for two lines
+            marker.bindPopup("<b>" + title + "</b><br>" + venue);
             markers.addLayer(marker);
         }
 
