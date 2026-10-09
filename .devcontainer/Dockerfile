@@ -5,6 +5,8 @@ ENV TZ="$TZ"
 
 ARG CLAUDE_CODE_VERSION=latest
 
+RUN sed -i 's|http://|https://|g' /etc/apt/sources.list.d/debian.sources
+
 # Install basic development tools and iptables/ipset
 RUN apt-get update && apt-get install -y --no-install-recommends \
   less \

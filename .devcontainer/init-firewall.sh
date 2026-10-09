@@ -77,7 +77,7 @@ for domain in \
     ips=$(dig +noall +answer A "$domain" | awk '$4 == "A" {print $5}')
     if [ -z "$ips" ]; then
         echo "ERROR: Failed to resolve $domain"
-        exit 1
+        continue
     fi
     
     while read -r ip; do

@@ -33,12 +33,12 @@ var addressPoints = [
     "West Lafayette IN USA",
     40.4258686,
     -86.9080655,
-    "Purdue Institute of Integrative Neuroscience Retreat, Purdue Undergraduate Research Symposium"
+    "Purdue Undergraduate Research Symposium"
   ],
   [
     "Dayton OH USA",
-    39.77944,
-    -84.199196,
+    39.7589478,
+    -84.1916069,
     "American Society of Biomechanics Regional Conference"
   ],
   [
@@ -46,6 +46,12 @@ var addressPoints = [
     40.7433066,
     -74.0323752,
     "Department Seminar"
+  ],
+  [
+    "Seoul, South Korea",
+    37.5666791,
+    126.9782914,
+    "International Conference of NeuroRehabilitation"
   ],
   [
     "Cambridge MA USA",
@@ -66,22 +72,10 @@ var addressPoints = [
     "Progress in Motor Control"
   ],
   [
-    "Knoxville TN USA",
-    35.9603948,
-    -83.9210261,
-    "American Society of Biomechanics"
-  ],
-  [
     "Boulder CO USA",
     40.102555,
     -105.3632079,
     "American Society of Biomechanics"
-  ],
-  [
-    "Vail CO USA",
-    39.6438028,
-    -106.3888231,
-    "Summer Biomechanics Bioengineering and Biotransport Conference"
   ],
   [
     "Chicago IL USA",
@@ -94,6 +88,12 @@ var addressPoints = [
     35.3464326,
     -106.5261813,
     "Society for Biomechanics, Bioengineering, and Biotransport Conference"
+  ],
+  [
+    "Orlando, FL",
+    28.5421218,
+    -81.379045,
+    "American Academy of Physical Medicine and Rehabilitation"
   ],
   [
     "NYC NY USA",

@@ -2,7 +2,7 @@
 title: "Transcutaneous Spinal Cord Stimulation-Augmented Treadmill Gait Training in Chronic Stroke: Single-Session and Preliminary Longitudinal Effects on Step Length"
 collection: talks
 type: "Podium"
-permalink: /talks/2026-10-02-ICNR-Stroke
+permalink: /talks/2026-09-30-ICNR-Stroke
 venue: "International Conference of NeuroRehabilitation"
 date: 2026-10-02
 location: "Seoul, South Korea"
