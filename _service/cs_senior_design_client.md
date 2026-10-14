@@ -1,0 +1,7 @@
+---
+dates: 2023-2024
+title: Computer Science Undergraduate Student Senior Design Client
+details:
+    - "Provided a computer science undergraduate senior design team with their senior design idea: developing a 3D biomechanical data visualizer."
+    - During weekly meetings I guided their design process by informing the team of the needs and use cases of biomechanics researchers regarding data visualization, and gave feedback on their implementation.
+---

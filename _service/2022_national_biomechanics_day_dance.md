@@ -1,0 +1,6 @@
+---
+dates: May 2022
+title: National Biomechanics Day, Dance
+details:
+    - Prepared and led activities to teach biomechanics concepts to high school students at Frank Sinatra School of the Arts in Queens, NY
+---

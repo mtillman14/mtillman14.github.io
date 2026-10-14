@@ -1,5 +1,5 @@
 ---
-title: "Healthy Older Adults Generate Transverse-Plane Momenta Required for 90$^circ$ Turns While Walking during the Same Phases of Gait as Used in Straight-Line Gait"
+title: "Healthy Older Adults Generate Transverse-Plane Momenta Required for 90° Turns While Walking during the Same Phases of Gait as Used in Straight-Line Gait"
 collection: publications
 category: manuscripts
 permalink: /publication/2024-08-01-Healthy-Older-Adults-Generate-Transverse-Plane-Momenta-Required-for-90circ-Turns-While-Walking-during-the-Same-Phases-of-Gait-as-Used-in-Straight-Line-Gait

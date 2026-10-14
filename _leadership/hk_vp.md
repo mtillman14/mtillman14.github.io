@@ -1,8 +1,8 @@
 ---
 dates: 2018-2019
-title: Secretary
+title: Vice-President
 organization: HK GSO, Purdue University
 details:
-    - Vice President of Purdue University's Department of Healthy & Kinesiology Graduate Student Organization (HK GSO).
+    - Vice President of Purdue University's Department of Health & Kinesiology Graduate Student Organization (HK GSO).
     - Organized departmental fundraisers and professional development workshops.
 ---

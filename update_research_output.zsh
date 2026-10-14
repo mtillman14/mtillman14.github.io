@@ -9,7 +9,7 @@
 #      url_slug, venue, date as YYYY-MM-DD, location, talk_url, description).
 #      Put any talk PDFs in files/<type>/ with the same name as the generated .md file.
 #   3. Activate a Python environment  with `source .venv/bin/activate` with these packages installed:
-#        requests, pybtex, pandas, getorg, geopy
+#        requests, pybtex, pandas, getorg, geopy, jinja2
 #   4. Make sure you have an internet connection. The script queries the ORCID API
 #      (publications) and the Nominatim geocoder (talk map locations).
 #   5. Run it from the root folder of the project (e.g. `./update_research_output.zsh`).
@@ -32,6 +32,10 @@ python talks.py
 
 # Update the talkmap
 python talkmap.py
+
+# Build the CV from the markdown files (writes site_updater/cv/build/cv.tex,
+# and files/cv.pdf if latexmk is installed)
+python build_cv.py
 
 # Build the site and serve it locally for review
 cd ..

@@ -1,0 +1,6 @@
+---
+dates: Apr 2018
+title: Outstanding Senior in Movement and Sports Sciences
+institution: Purdue Dept. of Health and Kinesiology
+description: Awarded for outstanding engagement in original undergraduate research under the guidance of a Purdue faculty mentor
+---

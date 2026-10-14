@@ -11,3 +11,6 @@ Gemfile.lock
 # Ingore files created by npm
 node_modules
 package-lock.json
+
+# CV build output (site_updater/build_cv.py)
+site_updater/cv/build/

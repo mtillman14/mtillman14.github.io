@@ -1,0 +1,130 @@
+((= CV template rendered by site_updater/build_cv.py (see the delimiter notes there). =))
+\documentclass[11pt,letterpaper,sans]{moderncv}
+\moderncvstyle{classic}
+\moderncvcolor{blue}
+\usepackage[scale=0.75]{geometry}
+\usepackage{lastpage}
+
+((* set first, _, last = name.partition(' ') *))
+\name{((( first | latex )))}{((( last | latex )))}
+\title{Curriculum Vitae}
+
+\fancypagestyle{cvfooter}{%
+  \fancyhf{}%
+  \renewcommand{\headrulewidth}{0pt}%
+  \fancyfoot[R]{\color{gray}\textit{Page \thepage\ of \pageref*{LastPage}}}%
+}
+
+((* macro role(title, places=[]) -*))
+\textbf{((( title | latex )))}((* for place in places if place *)), \textit{((( place | latex )))}((* endfor *))
+((*- endmacro *))
+
+((* macro details(entry) *))
+((* for item in entry.details or [] *))
+\cvitem{}{- ((( item | latex )))}
+((* endfor *))
+((* endmacro *))
+
+((* macro talk(t, label) -*))
+\cvitem{((( label )))}{((( t.authors | latex | highlight )))((* if t.authors *)). ((* endif *))((( t.title | latex | sentence ))) ((( t.venue | latex )))((* if t.location *)), \textit{((( t.location | latex )))}((* endif *)), ((( entry_date(t) | cvdate ))), \textit{((* if t.cv_note *))((( t.cv_note | latex ))); ((* endif *))((( presentation_label(t.type) )))((* if t.presenter *)) by} ((( t.presenter | latex | highlight )))((* else *))}((* endif *))}
+((*- endmacro *))
+
+\begin{document}
+\makecvtitle
+\pagestyle{cvfooter}
+\thispagestyle{cvfooter}
+
+((( objective | markdown )))
+
+((* if education *))
+\section{Education}
+((* for e in education *))
+\cvitem{((( year_label(e, loop.previtem) )))}{((( role(e.degree, [e.institution]) ))), ((( entry_date(e) | cvdate )))((* if e.gpa *))\hfill ((( e.gpa | latex )))((* endif *))}
+((* if e.thesis *))
+\cvitem{}{Thesis: ((( e.thesis | latex )))}
+((* endif *))
+((* endfor *))
+((* endif *))
+
+((* if research_positions *))
+\section{Research Positions}
+((* for e in research_positions *))
+\cvitem{((( year_label(e, loop.previtem) )))}{((( role(e.title, [e.institution, e.department]) ))), ((( entry_date(e) | cvdate )))}
+((( details(e) )))
+((* endfor *))
+((* endif *))
+
+((* if teaching *))
+\section{Teaching}
+((* for e in teaching *))
+\cvitem{((( year_label(e, loop.previtem) )))}{((( role(e.title, [e.institution, e.department]) ))), ((( entry_date(e) | cvdate )))}
+((( details(e) )))
+((* endfor *))
+((* endif *))
+
+((* if publications *))
+\section{Peer-Reviewed Publications}
+((* for p in publications *))
+\cvitem{((( year_label(p, loop.previtem) )))}{((( p.author_list | latex | highlight ))). ``((( p.title | latex | sentence )))'', \textit{((( p.venue | latex )))}, ((( entry_date(p) | year )))((* if p.doi *)), DOI: \href{https://doi.org/((( p.doi )))}{((( p.doi | latex )))}((* endif *))((* if p.status *)), ((( p.status | latex )))((* endif *))}
+((* endfor *))
+((* endif *))
+
+((* if conference_papers *))
+\section{Peer-Reviewed Conference Papers and Presentations}
+((* for p in conference_papers *))
+\cvitem{((( year_label(p, loop.previtem) )))}{((( p.author_list | latex | highlight ))). ((( p.title | latex | sentence ))) ((( p.venue | latex )))((* if p.location *)), \textit{((( p.location | latex )))}((* endif *)), ((( entry_date(p) | cvdate )))((* if p.doi *)), DOI: \href{https://doi.org/((( p.doi )))}{((( p.doi | latex )))}((* endif *))((* if p.type *)), \textit{((( p.type ))) presentation}((* endif *))}
+((* endfor *))
+((* endif *))
+
+((* if abstracts *))
+\section{Peer-Reviewed Conference Abstracts and Presentations}
+((* for t in abstracts *))
+((( talk(t, year_label(t, loop.previtem)) )))
+((* endfor *))
+((* endif *))
+
+((* if additional_presentations *))
+\section{Additional Presentations}
+((* for t in additional_presentations *))
+((( talk(t, year_label(t, loop.previtem)) )))
+((* endfor *))
+((* endif *))
+
+((* if leadership *))
+\section{Leadership}
+((* for e in leadership *))
+\cvitem{((( year_label(e, loop.previtem) )))}{((( role(e.title, [e.organization]) ))), ((( entry_date(e) | cvdate )))}
+((( details(e) )))
+((* endfor *))
+((* endif *))
+
+((* if service *))
+\section{Service}
+((* for e in service *))
+\cvitem{((( year_label(e, loop.previtem) )))}{((( role(e.title, [e.organization]) ))), ((( entry_date(e) | cvdate )))}
+((( details(e) )))
+((* endfor *))
+((* endif *))
+
+((* if awards *))
+\section{Awards}
+((* for e in awards *))
+\cvitem{((( year_label(e, loop.previtem) )))}{\textbf{((( e.title | latex )))}((* if e.institution *)), ((( e.institution | latex )))((* endif *)), ((( entry_date(e) | cvdate )))((* if e.description *)), \textit{((( e.description | latex )))}((* endif *))}
+((* endfor *))
+((* endif *))
+
+((* if certificates *))
+\section{Certificates}
+((* for e in certificates *))
+\cvitem{((( year_label(e, loop.previtem) )))}{\textbf{((( e.title | latex )))}((* if e.institution *)), ((( e.institution | latex )))((* endif *)), ((( entry_date(e) | cvdate )))((* if e.description *)), \textit{((( e.description | latex )))}((* endif *))}
+((* endfor *))
+((* endif *))
+
+((* if affiliations *))
+\section{Professional Affiliations}
+((* for e in affiliations *))
+\cvitem{((( year_label(e, loop.previtem) )))}{((( e.organization | latex )))((* if e.role *)), \textit{((( e.role | latex )))}((* endif *)), ((( entry_date(e) | cvdate )))}
+((* endfor *))
+((* endif *))
+
+\end{document}
