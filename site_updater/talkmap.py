@@ -14,7 +14,12 @@
 import time
 import os
 import glob
-import getorg
+import io
+import contextlib
+
+# getorg prints an ipywidgets/ipyleaflet warning on import (Jupyter-only feature we don't use)
+with contextlib.redirect_stdout(io.StringIO()):
+    import getorg
 from geopy import Nominatim
 from geopy.exc import GeocoderInsufficientPrivileges, GeocoderUnavailable, GeocoderTimedOut
 
@@ -80,7 +85,6 @@ def get_locations(g: list) -> tuple:
 
 
 location_dict, venue_dict = get_locations(g)
-m = getorg.orgmap.create_map_obj()
 getorg.orgmap.output_html_cluster_map(location_dict, folder_name="../talkmap", hashed_usernames=False)
 
 
