@@ -9,7 +9,7 @@ redirect_from:
 
 {% include base_path %}
 
-[Download and view my CV here](http://mtillman14.github.io/files/cv.pdf)
+[Download and view my CV here]({{ base_path }}/files/cv.pdf?v={{ site.time | date: '%s' }})
 
 <!-- Education
 ======
