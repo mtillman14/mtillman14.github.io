@@ -1,6 +1,6 @@
 var addressPoints = [
   [
-    "Ottawa CA",
+    "Ottawa ON CA",
     45.4208777,
     -75.6901106,
     "American Society of Biomechanics & North American Congress on Biomechanics Joint Conference"
@@ -54,9 +54,9 @@ var addressPoints = [
     "Summer Biomechanics Bioengineering and Biotransport Conference"
   ],
   [
-    "Michigan USA",
-    43.6211955,
-    -84.6824346,
+    "St. Joseph MI USA",
+    41.9031963,
+    -85.5356726,
     "Purdue Institute of Integrative Neuroscience Retreat"
   ],
   [
