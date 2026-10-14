@@ -6,10 +6,12 @@ author_profile: true
 ---
 
 {% if site.author.googlescholar %}
-  <div class="wordwrap">You can also find my articles on <a href="{{site.author.googlescholar}}">my Google Scholar profile</a>.</div>
+  <div class="wordwrap" style="margin-bottom: 1em;">You can also find my articles on <a href="{{site.author.googlescholar}}">my Google Scholar profile</a>.</div>
 {% endif %}
 
 {% include base_path %}
+
+{% include sort-control.html default="date-desc" %}
 
 <!-- New style rendering if publication categories are defined -->
 {% if site.publication_category %}
@@ -21,16 +23,17 @@ author_profile: true
       {% endif %}
       {% unless title_shown %}
         <h2>{{ category[1].title }}</h2><hr />
+        <div class="sortable-list">
         {% assign title_shown = true %}
       {% endunless %}
       {% include archive-single.html %}
     {% endfor %}
+    {% if title_shown %}</div>{% endif %}
   {% endfor %}
 {% else %}
+  <div class="sortable-list">
   {% for post in site.publications reversed %}
     {% include archive-single.html %}
   {% endfor %}
+  </div>
 {% endif %}
-
-
-

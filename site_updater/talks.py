@@ -15,7 +15,7 @@ import os
 
 # ## Data format
 # 
-# The TSV needs to have the following columns: title, type, url_slug, venue, date, location, talk_url, description, with a header at the top. Many of these fields can be blank, but the columns must be in the TSV.
+# The CSV needs to have the following columns: title, type, url_slug, venue, date, location, talk_url, authors, description, link_url, with a header at the top. Many of these fields can be blank, but the columns must be in the TSV.
 # 
 # - Fields that cannot be blank: `title`, `url_slug`, `date`. All else can be blank. `type` defaults to "Talk" 
 # - `date` must be formatted as YYYY-MM-DD.
@@ -25,15 +25,13 @@ import os
 # 
 
 
-# ## Import TSV
+# ## Import CSV
 # 
-# Pandas makes this easy with the read_csv function. We are using a TSV, so we specify the separator as a tab, or `\t`.
-# 
-# I found it important to put this data in a tab-separated values format, because there are a lot of commas in this kind of data and comma-separated values can get messed up. However, you can modify the import statement, as pandas also has read_excel(), read_json(), and others.
+# Pandas makes this easy with the read_csv function.
 
 # In[3]:
 
-talks = pd.read_csv("talks_new.csv")
+talks = pd.read_csv("talks.csv")
 talks
 
 
@@ -62,10 +60,6 @@ def html_escape(text):
 
 # In[5]:
 
-talk_url_str_dict = {}
-talk_url_str_dict["Talk"] = "Watch the talk here"
-# talk_url_str_dict["Poster"] = "Download the poster here"
-
 loc_dict = {}
 
 for row, item in talks.iterrows():
@@ -93,26 +87,39 @@ for row, item in talks.iterrows():
     if len(str(item.location)) > 3:
         md += 'location: "' + str(item.location) + '"\n'
            
-    md += "---\n"    
-    
-    print("Talk URL", item.talk_url)
-    if len(str(item.talk_url)) > 3: # Has URL
-        md += f"\n[{talk_url_str_dict[item.type]}](" + item.talk_url + ")\n"
-    elif os.path.exists(os.path.join(os.path.dirname(os.getcwd()),'files',item.type.lower(),md_filename.replace('.md','.pdf'))): # Has file        
-        item.talk_url = f"http://mtillman14.github.io/files/{item.type.lower()}/{md_filename.replace('.md','.pdf')}"
-        md += f"\n[Download here]({item.talk_url})\n"
+    if len(str(item.authors)) > 3:
+        md += 'authors: "' + item.authors + '"\n'
 
-    print("File ", md_filename, "Description", item.description)
-    
-    if len(str(item.description)) > 3:
-        md += "\n" + html_escape(item.description) + "\n"
-        
-        
-    md_filename = os.path.basename(md_filename)
-    #print(md)
-    
-    with open("../_talks/" + md_filename, 'w') as f:
-        f.write(md)
+    # The "Open Link to View" button on the site uses link_url. Fall back to talk_url, then to a PDF in files/<type>/
+    link_url = ""
+    if len(str(item.link_url)) > 3:
+        link_url = item.link_url
+    elif len(str(item.talk_url)) > 3:
+        link_url = item.talk_url
+    elif os.path.exists(os.path.join(os.path.dirname(os.getcwd()),'files',item.type.lower(),md_filename.replace('.md','.pdf'))): # Has file
+        link_url = f"http://mtillman14.github.io/files/{item.type.lower()}/{md_filename.replace('.md','.pdf')}"
+    if link_url:
+        md += 'link_url: "' + link_url + '"\n'
+
+    md += "---\n"
+
+    md_path = "../_talks/" + os.path.basename(md_filename)
+
+    # Only the YAML header is regenerated. An existing file keeps its markdown body (and line endings);
+    # a new file gets the description as its body.
+    if os.path.exists(md_path):
+        with open(md_path, 'rb') as f:
+            raw = f.read().decode('utf-8')
+        newline = '\r\n' if '\r\n' in raw else '\n'
+        body = raw.replace('\r\n', '\n').split('---\n', 2)[2]
+        print("Updating header of", md_path)
+    else:
+        newline = '\n'
+        body = "\n" + html_escape(item.description) + "\n" if len(str(item.description)) > 3 else ""
+        print("Creating", md_path)
+
+    with open(md_path, 'w', encoding='utf-8', newline=newline) as f:
+        f.write(md + body)
 
 
 # These files are in the talks directory, one directory below where we're working from.

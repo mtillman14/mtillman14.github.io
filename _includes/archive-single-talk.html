@@ -12,8 +12,8 @@
   {% assign title = post.title %}
 {% endif %}
 
-<div class="{{ include.type | default: "list" }}__item">
-  <article class="archive__item" itemscope itemtype="http://schema.org/CreativeWork">
+<div class="{{ include.type | default: "list" }}__item" data-title="{{ post.title | strip_html | escape }}" data-date="{{ post.date | date: '%Y-%m-%d' }}" data-venue="{{ post.venue | strip_html | escape }}">
+  <article id="{{ post.url | slugify }}" class="archive__item talk-item" itemscope itemtype="http://schema.org/CreativeWork">
     {% if include.type == "grid" and teaser %}
       <div class="archive__item-teaser">
         <img src=
@@ -38,5 +38,6 @@
     {% if post.date %}<p class="page__meta"><i class="fa fa-clock-o" aria-hidden="true"></i> {{ post.date | date: '%B %d, %Y' }}</p>{% endif %}
     {% if post.venue %}<p class="archive__item-excerpt" itemprop="description">{{post.type}}, {{ post.venue }},  {{post.location}} {% endif %}
     {% if post.excerpt %}<p class="archive__item-excerpt" itemprop="description">{{ post.excerpt | markdownify }}</p>{% endif %}
+    {% if post.link_url %}<a href="{{ post.link_url }}" class="btn btn--small talk-item__link" target="_blank" rel="noopener"><span>Open Link</span> <span>to View</span></a>{% endif %}
   </article>
 </div>

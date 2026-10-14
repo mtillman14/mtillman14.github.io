@@ -1,9 +1,9 @@
 var addressPoints = [
   [
-    "Ottawa, ON, Canada",
+    "Ottawa CA",
     45.4208777,
     -75.6901106,
-    "American Society of Biomechanics and North American Congress on Biomechanics Joint Conference"
+    "American Society of Biomechanics & North American Congress on Biomechanics Joint Conference"
   ],
   [
     "Rochester MN USA",
@@ -27,7 +27,7 @@ var addressPoints = [
     "Calgary AB Canada",
     51.0456064,
     -114.057541,
-    "American Society of Biomechanics and International Society of Biomechanics Joint Conference"
+    "American Society of Biomechanics & International Society of Biomechanics Joint Conference"
   ],
   [
     "West Lafayette IN USA",
@@ -42,12 +42,6 @@ var addressPoints = [
     "American Society of Biomechanics Regional Conference"
   ],
   [
-    "Hoboken, NJ USA",
-    40.7433066,
-    -74.0323752,
-    "Department Seminar"
-  ],
-  [
     "Seoul, South Korea",
     37.5666791,
     126.9782914,
@@ -60,22 +54,40 @@ var addressPoints = [
     "Summer Biomechanics Bioengineering and Biotransport Conference"
   ],
   [
-    "St. Joseph, MI USA",
-    41.9031963,
-    -85.5356726,
+    "Michigan USA",
+    43.6211955,
+    -84.6824346,
     "Purdue Institute of Integrative Neuroscience Retreat"
   ],
   [
-    "Miami, FL USA",
+    "Miami FL USA",
     25.7741566,
     -80.1935973,
     "Progress in Motor Control"
+  ],
+  [
+    "Knoxville TN USA",
+    35.9603948,
+    -83.9210261,
+    "American Society of Biomechanics"
   ],
   [
     "Boulder CO USA",
     40.102555,
     -105.3632079,
     "American Society of Biomechanics"
+  ],
+  [
+    "Washington D.C. USA",
+    38.8950982,
+    -77.0363849,
+    "Society for Neuroscience"
+  ],
+  [
+    "Vail CO USA",
+    39.6438028,
+    -106.3888231,
+    "Summer Biomechanics Bioengineering and Biotransport Conference"
   ],
   [
     "Chicago IL USA",
@@ -94,6 +106,12 @@ var addressPoints = [
     28.5421218,
     -81.379045,
     "American Academy of Physical Medicine and Rehabilitation"
+  ],
+  [
+    "Los Angeles, CA USA",
+    34.0536923,
+    -118.2427676,
+    "Congress of Neurological Surgeons"
   ],
   [
     "NYC NY USA",

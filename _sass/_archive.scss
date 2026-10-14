@@ -243,3 +243,107 @@
     }
   }
 }
+
+/* Talks list: the "Open Link to View" button sits in the empty margin to the right of the
+   text column, so the text keeps its full width. #main is capped at 1280px ($x-large), leaving
+   ~98px for the button on 1440px+ screens, so it uses a smaller gap and side padding there.
+   Elsewhere it shows below the entry's text. */
+.talk-item {
+  position: relative;
+  /* keep entries clear of the fixed masthead when scrolled to from the talk map */
+  scroll-margin-top: $masthead-height + 10px;
+  transition: background-color 0.6s ease;
+}
+
+/* briefly flagged after being selected on the talk map */
+.talk-item--highlight {
+  background-color: mix(#fff, $link-color, 85%);
+}
+
+/* Talk map on the talks page */
+.talkmap {
+  width: 100%;
+  height: 500px;
+  margin-bottom: 1.5em;
+  border: 1px solid $border-color;
+  background: #f2f3f3;
+
+  @include breakpoint($medium) {
+    height: 600px;
+  }
+}
+
+.talkmap__popup {
+  margin: 0.4em 0 0;
+  padding-left: 1.1em;
+
+  li {
+    margin-bottom: 0.4em;
+  }
+
+  a {
+    cursor: pointer;
+  }
+}
+
+.talk-item__link,
+.pub-item__link {
+  max-width: 8em;
+
+  /* only allow a line break between word pairs, e.g. "Open Link" and "to View" */
+  span {
+    white-space: nowrap;
+  }
+
+  @media (min-width: 1440px) {
+    padding-left: 0.6em;
+    padding-right: 0.6em;
+  }
+}
+
+/* Publications list: the download buttons sit in the right margin like the talks' link button */
+.pub-item {
+  position: relative;
+}
+
+.pub-item__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5em;
+  margin-bottom: 1em;
+
+  @media (min-width: 1440px) {
+    flex-direction: column;
+    align-items: flex-start;
+    margin-bottom: 0;
+  }
+}
+
+.talk-item__link,
+.pub-item__links {
+  @media (min-width: 1440px) {
+    position: absolute;
+    top: 50%;
+    left: calc(100% + 0.5rem);
+    transform: translateY(-50%);
+  }
+}
+
+/* "Sort by" dropdown on the talks and publications pages */
+.sort-control {
+  margin-bottom: 1em;
+  font-family: $sans-serif;
+  font-size: $type-size-5;
+
+  label {
+    display: inline;
+    margin-right: 0.5em;
+    font-weight: bold;
+  }
+
+  select {
+    width: auto;
+    display: inline-block;
+    padding: 0.25em 0.5em;
+  }
+}

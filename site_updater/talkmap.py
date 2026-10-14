@@ -18,7 +18,7 @@ import getorg
 from geopy import Nominatim
 from geopy.exc import GeocoderInsufficientPrivileges, GeocoderUnavailable, GeocoderTimedOut
 
-os.chdir('_talks') # Navigate to the _talks directory
+os.chdir('../_talks') # Navigate to the _talks directory (run from site_updater/)
 
 g = glob.glob("*.md")
 

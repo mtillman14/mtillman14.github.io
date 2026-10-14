@@ -5,10 +5,152 @@ permalink: /talks/
 author_profile: true
 ---
 
+{% include base_path %}
+
+{% include sort-control.html %}
+
 {% if site.talkmap_link == true %}
-<p style="text-decoration:underline;"><a href="/talkmap.html">Click here to see a map of all the places my work has been presented!</a></p>
+<!-- Only shown while the talks are sorted by venue -->
+<div id="talkmap-section">
+<p>All of the places that my work has been presented. Click a marker, then click a talk to jump to it below.</p>
+<!-- Height is reserved in CSS so the talk entries don't shift when the map loads -->
+<div id="talkmap" class="talkmap" aria-label="Map of talk locations"></div>
+</div>
+<script>
+  // Talks shown on the map; marker coordinates come from talkmap/org-locations.js (keyed by location)
+  var talkmapTalks = [
+    {% for post in site.talks reversed %}{% if post.location %}
+    {
+      id: {{ post.url | slugify | jsonify }},
+      title: {{ post.title | jsonify }},
+      date: {{ post.date | date: '%B %Y' | jsonify }},
+      venue: {{ post.venue | jsonify }},
+      location: {{ post.location | jsonify }}
+    },
+    {% endif %}{% endfor %}
+  ];
+
+  var talkmap = null;
+
+  function initTalkmap() {
+    var base = '{{ base_path }}/talkmap/';
+
+    function addStyle(href) {
+      var link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.href = href;
+      document.head.appendChild(link);
+    }
+
+    // Scripts depend on each other, so load them one after another
+    function loadScripts(srcs, done) {
+      if (!srcs.length) return done();
+      var script = document.createElement('script');
+      script.src = srcs[0];
+      script.onload = function () { loadScripts(srcs.slice(1), done); };
+      document.body.appendChild(script);
+    }
+
+    function escapeHtml(text) {
+      var div = document.createElement('div');
+      div.textContent = text == null ? '' : String(text);
+      return div.innerHTML;
+    }
+
+    function scrollToTalk(id) {
+      var entry = document.getElementById(id);
+      if (!entry) return;
+      entry.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      if (history.replaceState) history.replaceState(null, '', '#' + id);
+      entry.classList.add('talk-item--highlight');
+      setTimeout(function () { entry.classList.remove('talk-item--highlight'); }, 2000);
+    }
+
+    addStyle('https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.0-beta.2/leaflet.css');
+    addStyle(base + 'leaflet_dist/MarkerCluster.css');
+    addStyle(base + 'leaflet_dist/MarkerCluster.Default.css');
+
+    loadScripts([
+      'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.0-beta.2/leaflet.js',
+      base + 'leaflet_dist/leaflet.markercluster-src.js',
+      base + 'org-locations.js'
+    ], function () {
+      var tiles = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
+        maxZoom: 18,
+        attribution: 'Tiles &copy; Esri &mdash; Source: Esri, DeLorme, NAVTEQ, USGS, Intermap, iPC, NRCAN, Esri Japan, METI, Esri China (Hong Kong), Esri (Thailand), TomTom, 2012'
+      });
+
+      var container = document.getElementById('talkmap');
+      var zoom = container.offsetWidth > 600 ? 2 : 1;
+      var map = talkmap = L.map(container, { center: L.latLng(30, 10), zoom: zoom, layers: [tiles] });
+
+      var markers = L.markerClusterGroup({
+        showCoverageOnHover: false,
+        maxClusterRadius: 80
+      });
+
+      for (var i = 0; i < addressPoints.length; i++) {
+        var point = addressPoints[i];
+        var talksHere = talkmapTalks.filter(function (talk) { return talk.location === point[0]; });
+        if (!talksHere.length) continue;
+
+        var items = talksHere.map(function (talk) {
+          return '<li><a href="#' + escapeHtml(talk.id) + '" data-talk-id="' + escapeHtml(talk.id) + '">' + escapeHtml(talk.title) + '</a>' +
+            '<br><small>' + escapeHtml(talk.venue) + ', ' + escapeHtml(talk.date) + '</small></li>';
+        });
+
+        var marker = L.marker(L.latLng(point[1], point[2]), { title: point[0] });
+        marker.bindPopup('<b>' + escapeHtml(point[0]) + '</b><ul class="talkmap__popup">' + items.join('') + '</ul>',
+          { maxWidth: 320 });
+        markers.addLayer(marker);
+      }
+
+      map.addLayer(markers);
+
+      // Popup content is created on demand, so listen on the map container (capture phase,
+      // since Leaflet stops some events from bubbling out of popups)
+      container.addEventListener('click', function (event) {
+        var link = event.target.closest('a[data-talk-id]');
+        if (!link) return;
+        event.preventDefault();
+        scrollToTalk(link.getAttribute('data-talk-id'));
+      }, true);
+    });
+  }
+
+  (function () {
+    var select = document.getElementById('sort-select');
+    var section = document.getElementById('talkmap-section');
+    var pageLoaded = false;
+    var started = false;
+
+    // Show the map only while sorting by venue, and only load it once it's first needed
+    function updateTalkmap() {
+      var show = select.value === 'venue';
+      section.hidden = !show;
+      if (!show || !pageLoaded) return;
+      if (!started) {
+        started = true;
+        initTalkmap();
+      } else if (talkmap) {
+        // Leaflet can't measure the container while it's hidden
+        talkmap.invalidateSize();
+      }
+    }
+
+    select.addEventListener('change', updateTalkmap);
+    document.addEventListener('DOMContentLoaded', updateTalkmap);
+    // The map is slow to load, so wait until the talk entries have rendered
+    window.addEventListener('load', function () {
+      pageLoaded = true;
+      updateTalkmap();
+    });
+  })();
+</script>
 {% endif %}
 
+<div class="sortable-list">
 {% for post in site.talks reversed %}
   {% include archive-single-talk.html %}
 {% endfor %}
+</div>

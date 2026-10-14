@@ -41,6 +41,7 @@ layout: default
       {% endunless %}
 
       <section class="page__content" itemprop="text">
+        {% if page.link_url %}<p><a href="{{ page.link_url }}" class="btn" target="_blank" rel="noopener">Open Link to View</a></p>{% endif %}
         {{ content }}
         {% if page.link %}<div><a href="{{ page.link }}" class="btn">{{ site.data.ui-text[site.locale].ext_link_label | default: "Direct Link" }}</a></div>{% endif %}
       </section>

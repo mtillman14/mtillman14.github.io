@@ -1,0 +1,51 @@
+<!-- Dropdown that reorders the entries in every .sortable-list on the page.
+     Entries are the list's direct children and carry data-title, data-date (YYYY-MM-DD) and data-venue.
+     Pass default="<option value>" to change the initial sort (venue if omitted). -->
+{% assign default = include.default | default: 'venue' %}
+<div class="sort-control">
+  <label for="sort-select">Sort by</label>
+  <select id="sort-select" class="sort-control__select">
+    <option value="venue"{% if default == 'venue' %} selected{% endif %}>Venue</option>
+    <option value="date-asc"{% if default == 'date-asc' %} selected{% endif %}>Date (oldest &rarr; latest)</option>
+    <option value="date-desc"{% if default == 'date-desc' %} selected{% endif %}>Date (latest &rarr; oldest)</option>
+    <option value="title-asc"{% if default == 'title-asc' %} selected{% endif %}>Title (A&ndash;Z)</option>
+    <option value="title-desc"{% if default == 'title-desc' %} selected{% endif %}>Title (Z&ndash;A)</option>
+  </select>
+</div>
+<script>
+  (function () {
+    var select = document.getElementById('sort-select');
+
+    function text(item, key) {
+      return (item.getAttribute('data-' + key) || '').trim();
+    }
+
+    function byText(key) {
+      return function (a, b) {
+        return text(a, key).localeCompare(text(b, key), undefined, { sensitivity: 'base' });
+      };
+    }
+
+    var newestFirst = function (a, b) { return text(b, 'date').localeCompare(text(a, 'date')); };
+
+    var comparators = {
+      'venue': function (a, b) { return byText('venue')(a, b) || newestFirst(a, b); },
+      'title-asc': byText('title'),
+      'title-desc': function (a, b) { return byText('title')(b, a); },
+      'date-asc': function (a, b) { return newestFirst(b, a); },
+      'date-desc': newestFirst
+    };
+
+    function sortLists() {
+      var compare = comparators[select.value];
+      document.querySelectorAll('.sortable-list').forEach(function (list) {
+        Array.prototype.slice.call(list.children)
+          .sort(compare)
+          .forEach(function (item) { list.appendChild(item); });
+      });
+    }
+
+    select.addEventListener('change', sortLists);
+    document.addEventListener('DOMContentLoaded', sortLists);
+  })();
+</script>

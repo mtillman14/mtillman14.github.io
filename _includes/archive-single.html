@@ -12,8 +12,8 @@
   {% assign title = post.title %}
 {% endif %}
 
-<div class="{{ include.type | default: "list" }}__item">
-  <article class="archive__item" itemscope itemtype="http://schema.org/CreativeWork">
+<div class="{{ include.type | default: "list" }}__item" data-title="{{ post.title | strip_html | escape }}" data-date="{{ post.date | date: '%Y-%m-%d' }}" data-venue="{{ post.venue | strip_html | escape }}">
+  <article class="archive__item{% if post.collection == 'publications' %} pub-item{% endif %}" itemscope itemtype="http://schema.org/CreativeWork">
     {% if include.type == "grid" and teaser %}
       <div class="archive__item-teaser">
         <img src=
@@ -46,13 +46,23 @@
          <p class="page__date"><strong><i class="fa fa-fw fa-calendar" aria-hidden="true"></i> {{ site.data.ui-text[site.locale].date_label | default: "Published:" }}</strong> <time datetime="{{ post.date | default: "1900-01-01" | date_to_xmlschema }}">{{ post.date | default: "1900-01-01" | date: "%B %d, %Y" }}</time></p>
         {% endif %}
 
-    {% if post.excerpt and site.read_more != 'enabled' %}
+    {% comment %} The "Use Google Scholar for full citation" excerpt is hidden on the publications list {% endcomment %}
+    {% if post.collection == 'publications' %}
+    {% elsif post.excerpt and site.read_more != 'enabled' %}
     <p class="archive__item-excerpt" itemprop="description">{{ post.excerpt | markdownify }}</p>
     {% elsif post.excerpt and site.read_more == 'enabled' %}
     <p class="archive__item-excerpt" itemprop="description"><p>{{ post.excerpt | markdownify | remove: '<p>' | remove: '</p>' }}<strong><a href="{{ base_path }}{{ post.url }}" rel="permalink"> Read more</a></strong></p></p>
     {% endif %}
     
-    {% if post.citation and post.paperurl and post.slidesurl %}
+    {% comment %} The recommended citation is hidden on the publications list; only the download links are shown {% endcomment %}
+    {% if post.collection == 'publications' %}
+      {% if post.paperurl or post.slidesurl %}
+        <div class="pub-item__links">
+          {% if post.paperurl %}<a href="{{ post.paperurl }}" class="btn btn--small pub-item__link" target="_blank" rel="noopener"><span>Download</span> <span>Paper</span></a>{% endif %}
+          {% if post.slidesurl %}<a href="{{ post.slidesurl }}" class="btn btn--small pub-item__link" target="_blank" rel="noopener"><span>Download</span> <span>Slides</span></a>{% endif %}
+        </div>
+      {% endif %}
+    {% elsif post.citation and post.paperurl and post.slidesurl %}
       <p>Recommended citation: {{ post.citation }}<br /><a href="{{ post.paperurl }}">Download Paper</a> | <a href="{{ post.slidesurl }}">Download Slides</a></p>
     {% elsif post.citation and post.paperurl %}
       <p>Recommended citation: {{ post.citation }}<br /><a href="{{ post.paperurl }}">Download Paper</a></p>
