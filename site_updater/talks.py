@@ -105,13 +105,22 @@ for row, item in talks.iterrows():
 
     md_path = "../_talks/" + os.path.basename(md_filename)
 
-    # Only the YAML header is regenerated. An existing file keeps its markdown body (and line endings);
-    # a new file gets the description as its body.
+    # In an existing file, the YAML fields generated from the CSV are updated in place (or added at the
+    # end of the header if missing). Fields that aren't from the CSV (e.g. presenter, cv_section), the
+    # markdown body, and the line endings are left alone. Blank CSV cells don't remove a field.
+    # A new file gets the full generated header and the description as its body.
     if os.path.exists(md_path):
         with open(md_path, 'rb') as f:
             raw = f.read().decode('utf-8')
         newline = '\r\n' if '\r\n' in raw else '\n'
-        body = raw.replace('\r\n', '\n').split('---\n', 2)[2]
+        _, header, body = raw.replace('\r\n', '\n').split('---\n', 2)
+        generated = {line.split(':', 1)[0]: line for line in md[len("---\n"):-len("---\n")].strip('\n').split('\n')}
+        lines = []
+        for line in header.rstrip('\n').split('\n'):
+            key = line.split(':', 1)[0] if ':' in line and not line[:1].isspace() else None
+            lines.append(generated.pop(key) if key in generated else line)
+        lines.extend(generated.values())
+        md = "---\n" + "\n".join(lines) + "\n---\n"
         print("Updating header of", md_path)
     else:
         newline = '\n'

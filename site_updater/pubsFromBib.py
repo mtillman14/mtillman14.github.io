@@ -104,8 +104,11 @@ for pubsource in publist:
             for author in bibdata.entries[bib_id].persons["author"]:
                 citation = citation+" "+author.first_names[0]+" "+author.last_names[0]+", "
 
+            #display title: keep degree signs (e.g. 90{$^\circ$}) as °, then strip BibTeX braces/backslashes
+            display_title = b["title"].replace("$^\\circ$", "°").replace("{", "").replace("}","").replace("\\","")
+
             #citation title
-            citation = citation + "\"" + html_escape(b["title"].replace("{", "").replace("}","").replace("\\","")) + ".\""
+            citation = citation + "\"" + html_escape(display_title) + ".\""
 
             #add venue logic depending on citation type
             venue = publist[pubsource]["venue-pretext"]+b[publist[pubsource]["venuekey"]].replace("{", "").replace("}","").replace("\\","")
@@ -115,11 +118,13 @@ for pubsource in publist:
 
             
             ## YAML variables            
-            md = "---\ntitle: \""   + html_escape(b["title"].replace("{", "").replace("}","").replace("\\","")) + '"\n'
+            md = "---\ntitle: \""   + html_escape(display_title) + '"\n'
             
             md += """collection: """ +  publist[pubsource]["collection"]["name"]
 
-            md += """\ncategory: """ + publist[pubsource]["category"]
+            #conference proceedings are often exported as @article; file them under conferences
+            category = "conferences" if "proceeding" in venue.lower() else publist[pubsource]["category"]
+            md += """\ncategory: """ + category
 
             md += """\npermalink: """ + publist[pubsource]["collection"]["permalink"]  + html_filename
             
@@ -157,7 +162,26 @@ for pubsource in publist:
 
             md_filename = os.path.basename(md_filename)
 
-            with open("../_publications/" + md_filename, 'w', encoding="utf-8") as f:
+            md_path = "../_publications/" + md_filename
+
+            # In an existing file, the YAML fields generated from the .bib are updated in place (or added at
+            # the end of the header if missing). Other fields (e.g. location, type, doi), the markdown body,
+            # and the line endings are left alone. A new file gets the full generated header and body.
+            newline = "\n"
+            if os.path.exists(md_path):
+                with open(md_path, 'rb') as f:
+                    raw = f.read().decode('utf-8')
+                newline = '\r\n' if '\r\n' in raw else '\n'
+                _, header, body = raw.replace('\r\n', '\n').split('---\n', 2)
+                generated = {line.split(':', 1)[0]: line for line in md[len("---\n"):].split("\n---", 1)[0].split('\n')}
+                lines = []
+                for line in header.rstrip('\n').split('\n'):
+                    key = line.split(':', 1)[0] if ':' in line and not line[:1].isspace() else None
+                    lines.append(generated.pop(key) if key in generated else line)
+                lines.extend(generated.values())
+                md = "---\n" + "\n".join(lines) + "\n---\n" + body
+
+            with open(md_path, 'w', encoding="utf-8", newline=newline) as f:
                 f.write(md)
             print(f'SUCESSFULLY PARSED {bib_id}: \"', b["title"][:60],"..."*(len(b['title'])>60),"\"")
         # field may not exist for a reference
