@@ -4,6 +4,8 @@
 \moderncvcolor{blue}
 \usepackage[scale=0.75]{geometry}
 \usepackage{lastpage}
+% Normal spacing after periods, so abbreviations like "Dr." need no "~"
+\frenchspacing
 
 ((* set first, _, last = name.partition(' ') *))
 \name{((( first | latex )))}{((( last | latex )))}
@@ -39,7 +41,7 @@
 ((* if education *))
 \section{Education}
 ((* for e in education *))
-\cvitem{((( year_label(e, loop.previtem) )))}{((( role(e.degree, [e.institution]) ))), ((( entry_date(e) | cvdate )))((* if e.gpa *))\hfill ((( e.gpa | latex )))((* endif *))}
+\cvitem{((( year_label(e, loop.previtem) )))}{((( role(e.degree, [e.institution]) )))((* if e.gpa *))\hfill ((( e.gpa | latex )))((* endif *))}
 ((* if e.thesis *))
 \cvitem{}{Thesis: ((( e.thesis | latex )))}
 ((* endif *))
@@ -65,14 +67,14 @@
 ((* if publications *))
 \section{Peer-Reviewed Publications}
 ((* for p in publications *))
-\cvitem{((( year_label(p, loop.previtem) )))}{((( p.author_list | latex | highlight ))). ``((( p.title | latex | sentence )))'', \textit{((( p.venue | latex )))}, ((( entry_date(p) | year )))((* if p.doi *)), DOI: \href{https://doi.org/((( p.doi )))}{((( p.doi | latex )))}((* endif *))((* if p.status *)), ((( p.status | latex )))((* endif *))}
+\cvitem{((( year_label(p, loop.previtem) )))}{((( p.author_list | latex | highlight ))). ``((( p.title | latex | sentence )))'', \textit{((( p.venue | latex )))}, ((( entry_date(p) | year )))((* if p.doi *)), DOI: \href{https://doi.org/((( p.doi | url )))}{((( p.doi | latex )))}((* endif *))((* if p.status *)), ((( p.status | latex )))((* endif *))}
 ((* endfor *))
 ((* endif *))
 
 ((* if conference_papers *))
 \section{Peer-Reviewed Conference Papers and Presentations}
 ((* for p in conference_papers *))
-\cvitem{((( year_label(p, loop.previtem) )))}{((( p.author_list | latex | highlight ))). ((( p.title | latex | sentence ))) ((( p.venue | latex )))((* if p.location *)), \textit{((( p.location | latex )))}((* endif *)), ((( entry_date(p) | cvdate )))((* if p.doi *)), DOI: \href{https://doi.org/((( p.doi )))}{((( p.doi | latex )))}((* endif *))((* if p.type *)), \textit{((( p.type ))) presentation}((* endif *))}
+\cvitem{((( year_label(p, loop.previtem) )))}{((( p.author_list | latex | highlight ))). ((( p.title | latex | sentence ))) ((( p.venue | latex )))((* if p.location *)), \textit{((( p.location | latex )))}((* endif *)), ((( entry_date(p) | cvdate )))((* if p.doi *)), DOI: \href{https://doi.org/((( p.doi | url )))}{((( p.doi | latex )))}((* endif *))((* if p.type *)), \textit{((( p.type | latex ))) presentation}((* endif *))}
 ((* endfor *))
 ((* endif *))
 

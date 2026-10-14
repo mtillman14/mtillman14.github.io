@@ -8,5 +8,3 @@ date: 2022-02-02
 location: "Hoboken NJ USA"
 authors: "Tillman M"
 ---
-
-Oral presentation by Mitchell Tillman

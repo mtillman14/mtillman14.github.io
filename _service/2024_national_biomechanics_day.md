@@ -1,6 +1,0 @@
----
-dates: Apr 2024
-title: National Biomechanics Day
-details:
-    - Taught middle and high school students foundational biomechanics concepts using engaging activities and laboratory equipment (force plates, motion capture, IMU's, etc.)
----

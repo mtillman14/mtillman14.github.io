@@ -14,3 +14,9 @@ package-lock.json
 
 # CV build output (site_updater/build_cv.py)
 site_updater/cv/build/
+
+# macOS Finder metadata
+.DS_Store
+
+# CV PDF: built by site_updater/build_cv.py locally, and by the GitHub Action on push
+files/cv.pdf

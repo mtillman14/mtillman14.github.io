@@ -1,6 +1,0 @@
----
-dates: Apr 2017
-title: Outstanding Undergraduate Research Assistant
-institution: Purdue College of Health and Human Sciences
-description: Awarded to recognize exceptional performance in the course of assisting a faculty member's research
----

@@ -1,6 +1,0 @@
----
-dates: Jan 2017
-title: Ray Anne Shrader Undergraduate Travel Scholarship
-institution: Purdue Dept. of Health and Kinesiology
-description: $500 awarded for undergraduate academic travel. Covered the cost of attending the Midwest American Society of Biomechanics (ASB) regional conference in Grand Rapids, MI
----

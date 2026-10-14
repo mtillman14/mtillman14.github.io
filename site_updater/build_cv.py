@@ -1,28 +1,28 @@
 #!/usr/bin/env python
 """Build the CV (moderncv, classic/blue) from the site's markdown files.
 
-Every CV entry comes from the YAML front matter of a markdown file, so the
-website and the CV share one source of truth:
+Every CV entry comes from a YAML file or the YAML front matter of a Jekyll
+collection, so the website and the CV share one source of truth:
 
-    _cv_text/objective.md      Opening paragraph (markdown body, no front matter)
-    _education/                Education
-    _research_positions/       Research Positions
-    _teaching/                 Teaching
-    _publications/             Peer-Reviewed Publications      (category: manuscripts)
-                               Peer-Reviewed Conference Papers (category: conferences)
-    _talks/                    Conference Abstracts            (default)
-                               Additional Presentations        (type: Seminar, or cv_section: additional)
-    _leadership/               Leadership
-    _service/                  Service
-    _awards/                   Awards
-    _certificates/             Certificates
-    _affiliations/             Professional Affiliations
+    _cv_text/objective.md          Opening paragraph (markdown body, no front matter)
+    _data/cv/education/            Education
+    _data/cv/research_positions/   Research Positions
+    _teaching/                     Teaching
+    _publications/                 Peer-Reviewed Publications      (category: manuscripts)
+                                   Peer-Reviewed Conference Papers (category: conferences)
+    _talks/                        Conference Abstracts            (default)
+                                   Additional Presentations        (type: Seminar, or cv_section: additional)
+    _data/cv/leadership/           Leadership
+    _data/cv/service/              Service
+    _data/cv/awards/               Awards
+    _data/cv/certificates/         Certificates
+    _data/cv/affiliations/         Professional Affiliations
 
+The _data/cv/ files are also available to Jekyll as site.data.cv.<section>.
 Files whose names start with "_" are skipped, matching Jekyll's convention.
 
-Text is passed to LaTeX mostly as-is, so you can write LaTeX in the markdown
-files (e.g. "Dr.~Zaferiou"). The characters & % # _ $ are escaped for you
-unless already preceded by a backslash. HTML entities (e.g. &quot;) are decoded.
+All text is plain text: every LaTeX special character is escaped, so don't
+write LaTeX in the data files. The objective also supports **bold** and *italic*.
 
 Usage (from the site_updater/ folder, like the other scripts):
     python build_cv.py
@@ -32,7 +32,6 @@ the PDF and copies it to files/cv.pdf. Requires: jinja2, pyyaml.
 """
 
 import datetime
-import html
 import re
 import shutil
 import subprocess
@@ -65,11 +64,15 @@ def read_front_matter(path):
 
 
 def read_collection(folder):
+    """Entries from a Jekyll collection (front matter of *.md) or a _data folder (*.yml)."""
     entries = []
-    for path in sorted((ROOT / folder).glob("*.md")):
+    for path in sorted((ROOT / folder).glob("*.md")) + sorted((ROOT / folder).glob("*.yml")):
         if path.name.startswith("_"):
             continue
-        data = read_front_matter(path)
+        if path.suffix == ".yml":
+            data = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+        else:
+            data = read_front_matter(path)
         data["_file"] = path.name
         entries.append(data)
     return sorted(entries, key=sort_key, reverse=True)
@@ -145,10 +148,8 @@ def abbreviate(name):
 
 
 def pub_authors(entry):
-    """Abbreviated author list from 'authors', or parsed from the generated 'citation'."""
+    """Abbreviated author list from 'authors' (written by pubsFromBib.py, or by hand)."""
     raw = entry.get("authors")
-    if not raw and entry.get("citation"):
-        raw = html.unescape(entry["citation"]).split('"')[0]
     if not raw:
         return ""
     names = [n.strip() for n in raw.split(",")]
@@ -158,11 +159,22 @@ def pub_authors(entry):
 
 # ---------- LaTeX filters ----------
 
+LATEX_SPECIAL = {
+    "\\": r"\textbackslash{}", "{": r"\{", "}": r"\}", "&": r"\&", "%": r"\%", "$": r"\$",
+    "#": r"\#", "_": r"\_", "~": r"\textasciitilde{}", "^": r"\textasciicircum{}",
+}
+
+
 def latex(value):
+    """Escape plain text for LaTeX."""
     if value is None:
         return ""
-    text = html.unescape(str(value)).strip()
-    return re.sub(r"(?<!\\)([&%#_$])", r"\\\1", text)
+    return "".join(LATEX_SPECIAL.get(c, c) for c in str(value).strip())
+
+
+def url(value):
+    """Escape a URL for use inside \\href{...}: only % and # need it."""
+    return str(value).replace("%", r"\%").replace("#", r"\#")
 
 
 def sentence(text):
@@ -196,18 +208,18 @@ def main():
     context = {
         "name": yaml.safe_load((ROOT / "_config.yml").read_text(encoding="utf-8"))["name"],
         "objective": read_text("objective"),
-        "education": read_collection("_education"),
-        "research_positions": read_collection("_research_positions"),
+        "education": read_collection("_data/cv/education"),
+        "research_positions": read_collection("_data/cv/research_positions"),
         "teaching": read_collection("_teaching"),
         "publications": [p for p in publications if p.get("category", "manuscripts") == "manuscripts"],
         "conference_papers": [p for p in publications if p.get("category") == "conferences"],
         "abstracts": [t for t in talks if not is_additional(t)],
         "additional_presentations": [t for t in talks if is_additional(t)],
-        "leadership": read_collection("_leadership"),
-        "service": read_collection("_service"),
-        "awards": read_collection("_awards"),
-        "certificates": read_collection("_certificates"),
-        "affiliations": read_collection("_affiliations"),
+        "leadership": read_collection("_data/cv/leadership"),
+        "service": read_collection("_data/cv/service"),
+        "awards": read_collection("_data/cv/awards"),
+        "certificates": read_collection("_data/cv/certificates"),
+        "affiliations": read_collection("_data/cv/affiliations"),
     }
 
     # LaTeX-friendly delimiters: ((* block *)), ((( variable ))), ((= comment =))
@@ -218,7 +230,7 @@ def main():
         comment_start_string="((=", comment_end_string="=))",
         trim_blocks=True, lstrip_blocks=True,
     )
-    env.filters.update(latex=latex, highlight=highlight, sentence=sentence, markdown=markdown, cvdate=cvdate, year=year)
+    env.filters.update(latex=latex, url=url, highlight=highlight, sentence=sentence, markdown=markdown, cvdate=cvdate, year=year)
     env.globals["entry_date"] = entry_date
     env.globals["year_label"] = year_label
     env.globals["presentation_label"] = lambda kind: PRESENTATION_LABELS.get(kind, "Oral presentation")

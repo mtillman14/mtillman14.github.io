@@ -7,9 +7,7 @@ venue: "International Conference of NeuroRehabilitation"
 date: 2026-09-30
 location: "Seoul, South Korea"
 authors: "Tillman M, Jayaraman A"
-link_url: "http://mtillman14.github.io/files/abstracts/ICNR2026_Stroke_26.02.23.pdf"
+link_url: "/files/abstracts/ICNR2026_Stroke_26.02.23.pdf"
 ---
 
-Podium presentation by Mitchell Tillman
-
-<!-- [Download abstract here](http://mtillman14.github.io/files/abstracts/ICNR2026_Stroke_26.02.23.pdf) -->
+<!-- [Download abstract here](/files/abstracts/ICNR2026_Stroke_26.02.23.pdf) -->

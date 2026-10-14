@@ -8,7 +8,7 @@ venue: "Digital Biomarkers"
 authors: "Ameen Kishta, Rushmin Khazanchi, Nicole Veit, Mitchell Tillman, Kelly McKenzie, Shreya Aalla, Jasmine Glenn-Hunt, Chen Yang, Luigi Privitera, Xin S. Yu, Jai Chundi, Francesco Lanotte, Richard L. Lieber, Elliot Roth, Arun Jayaraman"
 doi: "10.1159/000552236"
 # citation: ''
-paperurl: http://mtillman14.github.io/files/publications/2026-05-05-Stroke-ML-tSCS-Parameter-Prediction.pdf
+paperurl: /files/publications/2026-05-05-Stroke-ML-tSCS-Parameter-Prediction.pdf
 # NOTE: This is the ML paper for Aim 1 of the stroke project.
 ---
 

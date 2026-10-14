@@ -11,6 +11,4 @@ link_url: "https://www.youtube.com/watch?v=D6GV7sVvbsA&t=0s"
 cv_section: "additional"
 ---
 
-Oral presentation by Mitchell Tillman
-
 <!-- [Watch the talk here](https://www.youtube.com/watch?v=D6GV7sVvbsA&t=0s) -->

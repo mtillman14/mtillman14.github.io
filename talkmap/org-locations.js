@@ -6,6 +6,12 @@ var addressPoints = [
     "American Society of Biomechanics & North American Congress on Biomechanics Joint Conference"
   ],
   [
+    "Seoul, South Korea",
+    37.5666791,
+    126.9782914,
+    "International Conference of NeuroRehabilitation"
+  ],
+  [
     "Rochester MN USA",
     44.0234387,
     -92.4630182,
@@ -40,12 +46,6 @@ var addressPoints = [
     39.7589478,
     -84.1916069,
     "American Society of Biomechanics Regional Conference"
-  ],
-  [
-    "Seoul, South Korea",
-    37.5666791,
-    126.9782914,
-    "International Conference of NeuroRehabilitation"
   ],
   [
     "Cambridge MA USA",

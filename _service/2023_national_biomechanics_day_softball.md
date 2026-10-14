@@ -1,6 +1,0 @@
----
-dates: May 2023
-title: National Biomechanics Day, Softball
-details:
-    - Led undergraduate students in preparing activities to teach high school softball players about biomechanics concepts related to softball.
----

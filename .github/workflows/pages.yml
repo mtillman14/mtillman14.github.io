@@ -1,0 +1,70 @@
+# Builds the CV PDF and the Jekyll site from the committed files, then deploys to GitHub Pages.
+# Requires Settings > Pages > Build and deployment > Source: "GitHub Actions".
+#
+# Steps that need the network (ORCID, geocoding for the talk map) stay in
+# update_research_output.zsh and are run locally; their output is committed.
+name: Build and deploy site
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: site_updater/requirements.txt
+      - run: pip install -r site_updater/requirements.txt
+
+      - name: Render CV LaTeX
+        working-directory: site_updater
+        run: python build_cv.py
+
+      - name: Compile CV PDF
+        uses: xu-cheng/latex-action@v3
+        with:
+          root_file: cv.tex
+          working_directory: site_updater/cv/build
+
+      - run: cp site_updater/cv/build/cv.pdf files/cv.pdf
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.3"
+          bundler-cache: true
+
+      - id: pages
+        uses: actions/configure-pages@v5
+
+      - name: Build site
+        run: bundle exec jekyll build --baseurl "${{ steps.pages.outputs.base_path }}"
+        env:
+          JEKYLL_ENV: production
+
+      - uses: actions/upload-pages-artifact@v3
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

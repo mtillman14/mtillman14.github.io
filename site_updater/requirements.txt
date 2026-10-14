@@ -1,0 +1,8 @@
+# Python packages for the site_updater scripts (see update_research_output.zsh)
+requests
+pybtex
+pandas
+getorg
+geopy
+jinja2
+pyyaml

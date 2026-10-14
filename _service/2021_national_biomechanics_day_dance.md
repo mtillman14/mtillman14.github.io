@@ -1,6 +1,0 @@
----
-dates: Apr 2021
-title: National Biomechanics Day, Dance
-details:
-    - Hosted a live dance performance using the real-time auditory biofeedback system to educate high school students on biomechanics
----

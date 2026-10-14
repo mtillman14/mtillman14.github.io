@@ -21,6 +21,7 @@ import pybtex.database.input.bibtex
 from time import strptime
 import string
 import html
+import json
 import os
 import re
 
@@ -45,15 +46,9 @@ publist = {
     } 
 }
 
-html_escape_table = {
-    "&": "&amp;",
-    '"': "&quot;",
-    "'": "&apos;"
-    }
-
-def html_escape(text):
-    """Produce entities within text."""
-    return "".join(html_escape_table.get(c,c) for c in text)
+def yaml_str(text):
+    """Plain text as a double-quoted YAML string (JSON strings are valid YAML)."""
+    return json.dumps(text, ensure_ascii=False)
 
 
 for pubsource in publist:
@@ -104,21 +99,26 @@ for pubsource in publist:
             for author in bibdata.entries[bib_id].persons["author"]:
                 citation = citation+" "+author.first_names[0]+" "+author.last_names[0]+", "
 
+            #full author names as plain text (no HTML entities), used by build_cv.py
+            authors = ", ".join(
+                " ".join(author.first_names + author.middle_names + author.last_names).replace("{", "").replace("}", "")
+                for author in bibdata.entries[bib_id].persons["author"])
+
             #display title: keep degree signs (e.g. 90{$^\circ$}) as °, then strip BibTeX braces/backslashes
             display_title = b["title"].replace("$^\\circ$", "°").replace("{", "").replace("}","").replace("\\","")
 
             #citation title
-            citation = citation + "\"" + html_escape(display_title) + ".\""
+            citation = citation + "\"" + display_title + ".\""
 
             #add venue logic depending on citation type
             venue = publist[pubsource]["venue-pretext"]+b[publist[pubsource]["venuekey"]].replace("{", "").replace("}","").replace("\\","")
 
-            citation = citation + " " + html_escape(venue)
+            citation = citation + " " + venue
             citation = citation + ", " + pub_year + "."
 
             
             ## YAML variables            
-            md = "---\ntitle: \""   + html_escape(display_title) + '"\n'
+            md = "---\ntitle: " + yaml_str(display_title) + "\n"
             
             md += """collection: """ +  publist[pubsource]["collection"]["name"]
 
@@ -131,29 +131,32 @@ for pubsource in publist:
             note = False
             if "note" in b.keys():
                 if len(str(b["note"])) > 5:
-                    md += "\nexcerpt: '" + html_escape(b["note"]) + "'"
+                    md += "\nexcerpt: " + yaml_str(b["note"])
                     note = True
 
             md += "\ndate: " + str(pub_date) 
 
-            md += "\nvenue: '" + html_escape(venue) + "'"
+            md += "\nvenue: " + yaml_str(venue)
             
-            url = False
-            if "url" in b.keys():
-                if len(str(b["url"])) > 5:
-                    md += "\npaperurl: '" + b["url"] + "'"
-                    url = True
+            md += "\nauthors: " + yaml_str(authors)
 
-            md += "\ncitation: '" + html_escape(citation) + "'"
-            
-            md += f"\npaperurl: http://mtillman14.github.io/files/publications/{md_filename.replace('.md','.pdf')}"
+            # The "Download Paper" button uses paperurl: the .bib url if there is one, else a PDF in files/publications/
+            url = False
+            pdf_filename = md_filename.replace('.md', '.pdf')
+            if "url" in b.keys() and len(str(b["url"])) > 5:
+                md += "\npaperurl: " + yaml_str(b["url"])
+                url = True
+            elif os.path.exists(os.path.join("..", "files", "publications", pdf_filename)):
+                md += f"\npaperurl: /files/publications/{pdf_filename}"
+
+            md += "\ncitation: " + yaml_str(citation)
 
             md += "\n---"
 
             
             ## Markdown description for individual page
             if note:
-                md += "\n" + html_escape(b["note"]) + "\n"
+                md += "\n" + b["note"] + "\n"
 
             if url:
                 md += "\n[Access paper here](" + b["url"] + "){:target=\"_blank\"}\n" 

@@ -7,7 +7,7 @@ dates: 2026-06-02
 venue: "Journal of Neurophysiology"
 authors: "Nicole C. Veit, Shreya Aalla, Ameen Kishta, Kelly A. McKenzie, Chen Yang, Mitchell Tillman, Elliot J. Roth, Richard L. Lieber, and Arun Jayaraman"
 doi: "10.1152/jn.00500.2025"
-paperurl: http://mtillman14.github.io/files/publications/2026-06-02-Stroke-tSCS-Electrode-Configuration
+paperurl: /files/publications/2026-06-02-Stroke-tSCS-Electrode-Configuration.pdf
 # NOTE: This is the electrode placement paper that the team mostly finished before I arrived, but submitted with my name on soon after I got to Shirley Ryan.
 ---
 

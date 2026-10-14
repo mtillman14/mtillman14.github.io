@@ -1,0 +1,14 @@
+{% comment %}
+  "<Type> presentation by <presenter>" for a talk, built from the same front matter that
+  site_updater/build_cv.py uses for the CV (keep the labels in sync with PRESENTATION_LABELS there).
+  Usage: {% include talk-presenter.html talk=page %}
+{% endcomment %}
+{%- assign talk = include.talk -%}
+{%- case talk.type -%}
+  {%- when "Poster" -%}{%- assign label = "Poster presentation" -%}
+  {%- when "Podium" -%}{%- assign label = "Podium presentation" -%}
+  {%- else -%}{%- assign label = "Oral presentation" -%}
+{%- endcase -%}
+{%- assign first_author = talk.authors | split: "," | first | strip -%}
+{%- assign presenter = talk.presenter | default: first_author -%}
+{{ label }}{% if presenter != "" %} by {{ presenter }}{% endif %}{% if talk.cv_note %}. {{ talk.cv_note }}{% endif %}
