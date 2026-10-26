@@ -24,7 +24,7 @@ Every backup checks in with a self-hosted [Healthchecks](https://healthchecks.io
 
 > **TODO:** a sentence or two on why this design — e.g. one offsite pipeline and one bill, fast local restores, everything in one place before it leaves the house.
 
-<div class="notice--danger" markdown="1">
+<div class="notice--danger" markdown="1" id="before-you-wipe">
 **Before you wipe anything: make sure you can actually restore it**
 
 A full backup is only useful if you can open it *after* the disk is gone. Before wiping a disk, converting a RAID array, or reinstalling a machine, check every item on this list. Do it after the final backup has finished, and before the first destructive command.
@@ -36,12 +36,13 @@ A full backup is only useful if you can open it *after* the disk is gone. Before
 
    My password manager (Vaultwarden) runs *on the NAS*, so I keep a second copy of these somewhere off the NAS as well. A password manager that lives on the disk you're wiping doesn't count.
 2. **Prove the secrets work without the machine being wiped.** From a *different* machine, using only the saved copies, list the repository's snapshots (see [Restoring without the NAS](#restoring-without-the-nas)). If that fails, stop.
-3. **Stop all Docker containers, *then* re-run the full backup, and only *then* wipe.** Stop every container except the backup tool itself (Backrest runs in Docker, so it has to keep running to do the backup) — Watchtower and Immich included — then run the full backup one last time. Any app still running could write data after the backup reads it, and that data would be lost in the wipe; databases copied while they're being written to can also come back broken. Don't restart anything between this backup and the wipe. See [Doing the migration](#doing-the-migration) for the commands.
-4. **Check the final backup finished cleanly:** no errors, no "partial backup" warnings.
-5. **Do a controlled test restore** of regular files *and* of a database dump, and check them (see [Verifying a backup with a controlled restore](#verifying-a-backup-with-a-controlled-restore)).
-6. **Write down the versions you'll need to restore onto,** especially for databases (for example, Immich's version and its Postgres major version, which are in its dump filenames).
+3. **Make a fresh database dump of every app that's backed up by its dumps.** Immich writes its database dump nightly at 02:00, and the live database folder is excluded from the backup, so anything that changed in Immich since then is in *no* backup until you make a new dump. While Immich is still running: Administration → Jobs → Database Backup → Start, and wait for it to finish.
+4. **Stop all Docker containers, *then* re-run the full backup, and only *then* wipe.** Stop every container except the backup tool itself (Backrest runs in Docker, so it has to keep running to do the backup) — Watchtower and Immich included — then run the full backup one last time. Any app still running could write data after the backup reads it, and that data would be lost in the wipe; databases copied while they're being written to can also come back broken. Don't restart anything between this backup and the wipe. See [Doing the migration](#doing-the-migration) for the commands.
+5. **Check the final backup finished cleanly:** no errors, no "partial backup" warnings.
+6. **Do a controlled test restore** of regular files *and* of a database dump, and check them (see [Verifying a backup with a controlled restore](#verifying-a-backup-with-a-controlled-restore)).
+7. **Write down the versions you'll need to restore onto,** especially for databases (for example, Immich's version and its Postgres major version, which are in its dump filenames).
 
-Only when every item is checked: wipe.
+Only when every item is checked: wipe. A script that walks through all of these and refuses to say "ready" unless every one passes is in [Automating the pre-wipe checks](#automating-the-pre-wipe-checks).
 </div>
 
 ## The hardware and software
@@ -494,7 +495,8 @@ Two things I learned running it:
 ### Doing the migration
 
 1. Run the full plan once, with everything running, to get the bulk of the data uploaded.
-2. **Right before the wipe: stop all Docker containers except Backrest, then run the full plan again.** The order is the point: stop, *then* back up, *then* wipe. Containers stopped *after* the final backup could have written data the backup never saw, and that data would be lost. Stop Watchtower first, so nothing gets updated or restarted:
+2. **Make a fresh Immich database dump** while Immich is still running (Administration → Jobs → Database Backup → Start), and wait for it to finish. Immich's live database folder is excluded from the backup, so without this, changes since the 02:00 dump would be lost.
+3. **Right before the wipe: stop all Docker containers except Backrest, then run the full plan again.** The order is the point: stop, *then* back up, *then* wipe. Containers stopped *after* the final backup could have written data the backup never saw, and that data would be lost. Stop Watchtower first, so nothing gets updated or restarted:
 
 {% raw %}
    ```bash
@@ -505,11 +507,11 @@ Two things I learned running it:
 {% endraw %}
 
    The last command should list only `backrest`. Then click **Backup Now** on the full plan. It only uploads what changed since the first run, so it's quick, and every database is copied while nothing is writing to it. From here until the wipe, don't start any container again — anything written after this backup won't be in it.
-3. Browse that final snapshot and test-restore samples to a scratch folder: a document folder, an app's data from `@docker/volumes`, the newest Immich database dump and one movie.
-4. Wipe and convert the volume, reinstall Docker and Backrest, add the full migration repository back to Backrest, and restore.
-5. For Docker volumes: stop Docker, restore the whole `@docker/volumes` folder (Docker's record of which volumes exist, `metadata.db`, lives inside it), then start Docker before running `docker compose up`.
-6. For Immich: restore onto the **same Immich version** the dumps were made with. The version is in the dump's filename (for example `immich-db-backup-…-v2.7.5-pg14.19.sql.gz`), so pin that version in Immich's compose file for the rebuild and update afterwards.
-7. Delete the migration plan, repository and bucket.
+4. Browse that final snapshot and test-restore samples to a scratch folder: a document folder, an app's data from `@docker/volumes`, the newest Immich database dump and one movie.
+5. Wipe and convert the volume, reinstall Docker and Backrest, add the full migration repository back to Backrest, and restore.
+6. For Docker volumes: stop Docker, restore the whole `@docker/volumes` folder (Docker's record of which volumes exist, `metadata.db`, lives inside it), then start Docker before running `docker compose up`.
+7. For Immich: restore onto the **same Immich version** the dumps were made with. The version is in the dump's filename (for example `immich-db-backup-…-v2.7.5-pg14.19.sql.gz`), so pin that version in Immich's compose file for the rebuild and update afterwards.
+8. Delete the migration plan, repository and bucket.
 
 > **TODO:** results of the migration — upload time, the test restore, and how the rebuild went.
 
@@ -658,6 +660,338 @@ rm -rf ~/restore-test
 ```
 
 The same pattern works for any database: take its dump out of the backup, load it into a throwaway copy of the same database software at the same version, and compare it with the live one.
+
+### Automating the pre-wipe checks
+
+Doing the checklist by hand is error-prone exactly when it matters most, so I wrote a script for it, [`pre-wipe-check.sh`](#the-script). It runs on a machine *other than the NAS* (my Linux desktop), walks through every item in [Before you wipe anything](#before-you-wipe) in order, and ends with **"Ready to wipe"** only if every step passed — otherwise **"Do NOT wipe"**.
+
+| Step | Checked automatically | Asks you |
+|---|---|---|
+| 0. Preflight | Tools installed, settings filled in, NAS reachable over SSH | Your NAS SSH password, once |
+| 1. Secrets | The secrets you type **from your saved copy** open the migration repository | To confirm they're saved in two places |
+| 2. Fresh database dump | Checked in step 7 | To run a manual Immich database backup |
+| 3. Stop containers | Stops Watchtower, then everything except `backrest`, and confirms only `backrest` is left | Your NAS sudo password |
+| 4. Final backup | The newest snapshot was taken *after* the containers stopped | To click **Backup Now**, then confirm Backrest showed no warnings |
+| 5. Integrity | `restic check --read-data-subset=5%` | — |
+| 6. Sample files | Restores sample folders with `--verify`, and compares 20 random files' checksums with the NAS originals (an exact match, since nothing is running) | Your NAS sudo password |
+| 7. Immich database | Extracts the newest dump, checks it's at most two hours older than the container stop, checks it with `gzip -t`, loads it into a throwaway copy of Immich's own Postgres image, and checks the asset, album and people tables have rows | — |
+
+A few design choices:
+
+- **Some steps can't be automated, so the script asks.** It can't see your password manager, so it asks you to confirm the secrets are saved, then *proves* it by having you type them in from the saved copy. A restic snapshot doesn't record whether files were skipped — only Backrest's run status does — so it asks you to confirm the final run was clean.
+- **Secrets stay in memory.** They're typed with hidden input and never written to disk or read from the NAS.
+- **One SSH connection.** My NAS uses password SSH, so the script opens one connection at the start and reuses it, and groups the commands that need sudo, so you type passwords three times rather than dozens.
+- **It stops at the first failure that makes the rest pointless,** and logs everything to `~/pre-wipe-check/pre-wipe-check.log`.
+
+Fill in `REPO` and `SAMPLE_PATHS` at the top before running it; it refuses to run with the placeholders still in.
+
+#### The script
+
+{% raw %}
+```bash
+#!/bin/bash
+# Pre-wipe check for the NAS: run from the Beelink (not the NAS) before
+# wiping or converting the NAS volume. It verifies, in order:
+#   1. restore secrets are saved off the NAS, and actually open the backup
+#   2. Immich has a fresh database dump
+#   3. every container except Backrest is stopped
+#   4. the final full migration backup was taken after that
+#   5. the backup's stored data is intact
+#   6. sample files restore and match the originals
+#   7. the newest Immich database dump restores into Postgres
+# It prints PASS/FAIL per step and only says "ready to wipe" if all pass.
+#
+# Secrets are typed in from your saved copy, held in memory only, and never
+# written to disk or read from the NAS.
+
+set -euo pipefail
+
+# --- Settings ---------------------------------------------------------------
+NAS_SSH="<user>@<nas-lan-ip>"
+REPO="s3:s3.<region>.backblazeb2.com/<full-migration-bucket>"
+# Folders to test-restore, as paths inside the snapshot (/userdata = /volume1).
+SAMPLE_PATHS=(
+    "/userdata/<share>/<important-folder>"
+    "/userdata/docker/immich/album/library/<a-user-or-year-folder>"
+)
+IMMICH_BACKUPS="/userdata/docker/immich/album/backups"
+CHECK_SUBSET="5%"          # share of stored data to re-download and verify
+CHECKSUM_SAMPLES=20        # restored files to compare with the NAS originals
+WORK_DIR="$HOME/pre-wipe-check"
+# ---------------------------------------------------------------------------
+
+LOG="$WORK_DIR/pre-wipe-check.log"
+PG_CONTAINER="pre-wipe-immich-test"
+declare -a RESULTS=()
+FAILED=0
+
+mkdir -p "$WORK_DIR"
+# One SSH connection to the NAS, reused by every NAS command, so the SSH
+# password is only asked for once.
+SSH_OPTS=(-o ControlMaster=auto -o ControlPath="$WORK_DIR/ssh-%C" -o ControlPersist=30m)
+exec > >(tee -a "$LOG") 2>&1
+echo "=== Pre-wipe check started $(date -Is) ==="
+
+pass() { RESULTS+=("PASS  $1"); echo -e "\e[32mPASS\e[0m  $1"; }
+fail() { RESULTS+=("FAIL  $1"); echo -e "\e[31mFAIL\e[0m  $1"; FAILED=1; }
+step() { echo; echo -e "\e[1m== $1 ==\e[0m"; }
+confirm() { local a; read -rp "$1 [y/N] " a; [[ "$a" =~ ^[Yy]$ ]]; }
+# Runs a command on the NAS with a terminal, so sudo can ask for a password.
+nas() { ssh -t "${SSH_OPTS[@]}" "$NAS_SSH" "$@"; }
+
+cleanup() {
+    docker rm -f -v "$PG_CONTAINER" >/dev/null 2>&1 || true
+    ssh "${SSH_OPTS[@]}" -O exit "$NAS_SSH" >/dev/null 2>&1 || true
+}
+trap cleanup EXIT
+
+summary() {
+    echo; echo -e "\e[1m== Summary ==\e[0m"
+    printf '%s\n' "${RESULTS[@]}"
+    echo
+    if [ "$FAILED" -eq 0 ]; then
+        echo -e "\e[32mAll checks passed. Ready to wipe.\e[0m"
+        echo "Do not start any container on the NAS before the wipe."
+    else
+        echo -e "\e[31mOne or more checks failed. Do NOT wipe.\e[0m"
+    fi
+    echo "Log: $LOG"
+}
+
+# --- 0. Preflight -------------------------------------------------------------
+step "0. Preflight"
+for cmd in restic docker ssh jq gzip sha256sum; do
+    command -v "$cmd" >/dev/null || { fail "missing command: $cmd"; summary; exit 1; }
+done
+if [[ "$REPO" == *"<"* ]] || printf '%s\n' "${SAMPLE_PATHS[@]}" | grep -q '<'; then
+    fail "fill in REPO and SAMPLE_PATHS at the top of this script first"
+    summary; exit 1
+fi
+echo "Connecting to the NAS (enter your NAS SSH password if asked)..."
+if ssh "${SSH_OPTS[@]}" -o ConnectTimeout=10 -fN "$NAS_SSH"; then
+    pass "tools present, settings filled in, NAS reachable over SSH"
+else
+    fail "cannot SSH to $NAS_SSH (is SSH enabled in UGOS?)"; summary; exit 1
+fi
+
+# --- 1. Secrets ---------------------------------------------------------------
+step "1. Restore secrets saved off the NAS and the Beelink"
+cat <<'EOF'
+These must be saved in at least two places that don't depend on the NAS or
+the Beelink (for example Apple Passwords, plus a printed sheet):
+  - Beelink restic password (/etc/restic-password) and NAS login (/root/.nascreds)
+  - daily Backrest repository: password, URI, keyID, applicationKey
+  - full migration Backrest repository: password, URI, keyID, applicationKey
+  - Backblaze account login and two-factor recovery codes
+  - UGOS admin login
+EOF
+if confirm "Are all of these saved in two places off the NAS and the Beelink?"; then
+    pass "secrets saved (confirmed by you)"
+else
+    fail "secrets not saved"; summary; exit 1
+fi
+
+echo
+echo "Now type the full migration repository's secrets from your SAVED COPY"
+echo "(not from the NAS). Input is hidden."
+read -rsp "keyID: " AWS_ACCESS_KEY_ID; echo
+read -rsp "applicationKey: " AWS_SECRET_ACCESS_KEY; echo
+read -rsp "restic repository password: " RESTIC_PASSWORD; echo
+export AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY RESTIC_PASSWORD
+export RESTIC_REPOSITORY="$REPO"
+
+if restic snapshots --latest 1 >/dev/null; then
+    pass "saved secrets open the full migration repository"
+else
+    fail "saved secrets do not open the repository"; summary; exit 1
+fi
+
+# --- 2. Fresh Immich dump -------------------------------------------------------
+step "2. Fresh Immich database dump"
+cat <<'EOF'
+Immich dumps its database nightly at 02:00, and the migration plan excludes
+Immich's live database folder. Changes since the last dump are only saved
+if you make a new dump now, while Immich is still running:
+  Immich web UI -> Administration -> Jobs -> Database Backup -> Start
+EOF
+if confirm "Has a manual Immich database backup just completed?"; then
+    pass "manual Immich dump made (confirmed by you)"
+else
+    fail "no fresh Immich dump"; summary; exit 1
+fi
+
+# --- 3. Stop containers -------------------------------------------------------
+step "3. Stop every container except Backrest"
+# One sudo call (one password prompt): stop Watchtower first so nothing gets
+# restarted, then everything except Backrest, then report what's running and
+# which image Immich's Postgres uses (needed in step 7).
+# Results go to a file on the NAS rather than being captured here, so sudo's
+# password prompt stays visible.
+echo "Stopping containers on the NAS (enter your NAS sudo password if asked)..."
+nas "sudo sh -c '
+    w=\$(docker ps --format \"{{.Names}}\" | grep -i watchtower || true)
+    [ -n \"\$w\" ] && docker stop \$w >/dev/null
+    docker ps --format \"{{.Names}}\" | grep -vx backrest | xargs -r docker stop >/dev/null
+    { docker ps --format \"RUNNING:{{.Names}}\"
+      docker inspect immich_postgres --format \"IMAGE:{{.Config.Image}}\"; } > /tmp/pre-wipe-status.txt
+    chmod 644 /tmp/pre-wipe-status.txt
+'"
+nas_out=$(ssh "${SSH_OPTS[@]}" "$NAS_SSH" cat /tmp/pre-wipe-status.txt | tr -d '\r')
+STOP_TIME=$(date -u +%s)
+running=$(echo "$nas_out" | sed -n 's/^RUNNING://p')
+IMMICH_PG_IMAGE=$(echo "$nas_out" | sed -n 's/^IMAGE://p' | tail -1)
+if [ "$running" = "backrest" ]; then
+    pass "only backrest is running (stopped at $(date -d "@$STOP_TIME" -Is))"
+else
+    fail "still running besides backrest: $(echo "$running" | grep -vx backrest | paste -sd' ')"
+    summary; exit 1
+fi
+
+# --- 4. Final backup ------------------------------------------------------------
+step "4. Final full migration backup"
+echo "In Backrest, click Backup Now on the full migration plan."
+read -rp "Press Enter when it has finished... "
+snap_json=$(restic snapshots --latest 1 --json)
+snap_id=$(echo "$snap_json" | jq -r '.[-1].short_id')
+snap_time=$(date -d "$(echo "$snap_json" | jq -r '.[-1].time')" -u +%s)
+if [ "$snap_time" -gt "$STOP_TIME" ]; then
+    pass "snapshot $snap_id was taken after the containers stopped"
+else
+    fail "newest snapshot $snap_id is older than the container stop; run the backup again"
+    summary; exit 1
+fi
+if confirm "Did Backrest show the run as successful, with no warnings?"; then
+    pass "final backup clean (confirmed by you)"
+else
+    fail "final backup had warnings or errors"
+fi
+
+# --- 5. Repository integrity ----------------------------------------------------
+step "5. Repository integrity (re-reading $CHECK_SUBSET of stored data)"
+if restic check --read-data-subset="$CHECK_SUBSET"; then
+    pass "restic check: no errors"
+else
+    fail "restic check reported errors"
+fi
+
+# --- 6. Sample file restore ---------------------------------------------------
+step "6. Sample file restore"
+restore_dir="$WORK_DIR/restore"
+rm -rf "$restore_dir"
+includes=()
+for p in "${SAMPLE_PATHS[@]}"; do includes+=(--include "$p"); done
+if restic restore "$snap_id" --target "$restore_dir" --verify "${includes[@]}"; then
+    pass "sample restore verified against the snapshot"
+else
+    fail "sample restore failed verification"
+fi
+
+# The containers are stopped, so the originals haven't changed since the
+# backup: restored files must match the NAS byte for byte.
+mapfile -t samples < <(find "$restore_dir" -type f | shuf -n "$CHECKSUM_SAMPLES")
+compared=${#samples[@]}; mismatches=0
+if [ "$compared" -gt 0 ]; then
+    # Checksum all the originals in one sudo call (one password prompt).
+    nas_paths=""
+    for f in "${samples[@]}"; do
+        nas_paths+=" $(printf '%q' "/volume1/${f#"$restore_dir"/userdata/}")"
+    done
+    # Results go to a file on the NAS so sudo's password prompt stays visible;
+    # the second sudo reuses the first one's password within this session.
+    echo "Checksumming originals on the NAS (enter your NAS sudo password if asked)..."
+    nas "sudo sha256sum$nas_paths 2>/dev/null | sudo tee /tmp/pre-wipe-sums.txt >/dev/null" || true
+    declare -A nas_sums=()
+    while read -r sum path; do
+        [ -n "$path" ] && nas_sums["$path"]=$sum
+    done < <(ssh "${SSH_OPTS[@]}" "$NAS_SSH" cat /tmp/pre-wipe-sums.txt | tr -d '\r' | grep -E '^[0-9a-f]{64} ')
+    for f in "${samples[@]}"; do
+        orig="/volume1/${f#"$restore_dir"/userdata/}"
+        if [ "$(sha256sum "$f" | cut -d' ' -f1)" != "${nas_sums[$orig]:-missing}" ]; then
+            mismatches=$((mismatches + 1)); echo "  differs: $orig"
+        fi
+    done
+fi
+if [ "$compared" -gt 0 ] && [ "$mismatches" -eq 0 ]; then
+    pass "$compared random restored files match the NAS originals"
+else
+    fail "$mismatches of $compared restored files differ from the NAS (or none restored)"
+fi
+
+# --- 7. Immich database dump ----------------------------------------------------
+step "7. Immich database dump restore"
+dump_name=$(restic ls "$snap_id" "$IMMICH_BACKUPS" --json \
+    | jq -r 'select(.type == "file" and (.name | endswith(".sql.gz"))) | .name' \
+    | sort | tail -1)
+if [ -z "$dump_name" ]; then
+    fail "no Immich dump found in the snapshot"; summary; exit 1
+fi
+echo "Newest dump: $dump_name"
+dump_file="$WORK_DIR/immich.sql.gz"
+restic dump "$snap_id" "$IMMICH_BACKUPS/$dump_name" > "$dump_file"
+
+dump_time=$(restic ls "$snap_id" "$IMMICH_BACKUPS/$dump_name" --json \
+    | jq -r 'select(.type == "file") | .mtime' | head -1)
+age_min=$(( (STOP_TIME - $(date -d "$dump_time" -u +%s)) / 60 ))
+if [ "$age_min" -ge 0 ] && [ "$age_min" -le 120 ]; then
+    pass "dump was written ${age_min} min before the containers stopped"
+else
+    fail "dump is ${age_min} min older than the container stop; make a fresh one"
+fi
+
+if gzip -t "$dump_file"; then
+    pass "dump file is intact (gzip)"
+else
+    fail "dump file is corrupt"; summary; exit 1
+fi
+
+image="$IMMICH_PG_IMAGE"
+if [ -z "$image" ]; then
+    fail "could not read the immich_postgres image name in step 3"; summary; exit 1
+fi
+echo "Immich Postgres image: $image"
+docker rm -f -v "$PG_CONTAINER" >/dev/null 2>&1 || true
+docker run -d --name "$PG_CONTAINER" -e POSTGRES_PASSWORD=pre-wipe-test "$image" >/dev/null
+for _ in $(seq 1 60); do
+    docker exec "$PG_CONTAINER" pg_isready -U postgres >/dev/null 2>&1 && break
+    sleep 2
+done
+
+load_log="$WORK_DIR/immich-load.log"
+gunzip --stdout "$dump_file" \
+    | sed "s/SELECT pg_catalog.set_config('search_path', '', false);/SELECT pg_catalog.set_config('search_path', 'public, pg_catalog', true);/g" \
+    | docker exec -i "$PG_CONTAINER" psql --username=postgres --dbname=postgres > "$load_log" 2>&1 || true
+bad_errors=$(grep 'ERROR' "$load_log" | grep -v 'already exists' || true)
+if [ -z "$bad_errors" ]; then
+    pass "dump loaded into Postgres without errors"
+else
+    fail "dump loaded with errors (see $load_log):"
+    echo "$bad_errors" | head -10
+fi
+
+psql_q() { docker exec "$PG_CONTAINER" psql -U postgres -d immich -At -c "$1"; }
+for t in asset:assets album:albums person:person; do
+    name=""
+    for candidate in ${t//:/ }; do
+        if [ "$(psql_q "SELECT to_regclass('public.\"$candidate\"') IS NOT NULL;")" = "t" ]; then
+            name=$candidate; break
+        fi
+    done
+    if [ -z "$name" ]; then
+        fail "Immich table for '${t%%:*}' not found in the restored database"
+        continue
+    fi
+    count=$(psql_q "SELECT count(*) FROM \"$name\";")
+    if [ "$count" -gt 0 ]; then
+        pass "restored database: $count rows in $name"
+    else
+        fail "restored database: $name is empty"
+    fi
+done
+
+summary
+[ "$FAILED" -eq 0 ]
+```
+{% endraw %}
 
 ### Monitoring the nightly upload
 
