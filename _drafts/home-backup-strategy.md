@@ -341,7 +341,166 @@ The restic password is the single most important thing here. It's stored on the 
 
 ## NAS to Backblaze
 
-> **TODO:** review and document the Backrest plan and repository settings (schedule, retention, excludes, prune and check policies), and add a Healthchecks check for the nightly upload.
+The NAS backs itself up to Backblaze B2 with [Backrest](https://github.com/garethgeorge/backrest), a web UI and scheduler for restic, running in Docker on the NAS. Backrest mounts the whole NAS volume (`/volume1`) into the container at `/userdata`, so every path below starts with `/userdata`.
+
+I use two Backrest *plans*, each writing to its own restic repository in its own B2 bucket:
+
+| Plan | What it's for | Schedule | Repository |
+|---|---|---|---|
+| **Daily** | Everything I'd be upset to lose: documents, photos, app data, the computers' restic repositories | Every night at 03:00 | Daily bucket, kept long-term |
+| **Full migration** | Everything, including bulk media, as temporary storage while the NAS volume is wiped | Manual only | Separate bucket, deleted afterwards |
+
+The split reflects what each kind of data is worth. Losing my movies and TV shows would be annoying; losing my files and photos would not be recoverable. So the daily plan sends the irreplaceable data offsite every night, and the bulk media only goes offsite when I need it to survive a wipe.
+
+> **TODO:** NAS model, disks, and the RAID layout (RAID 1 now, converting to RAID 0).
+
+### Backblaze B2 setup
+
+For each repository:
+
+1. Create a **private** bucket.
+2. Set the bucket's **Lifecycle Settings** to **"Keep only the last version of the file"**. B2's default keeps every version of every file, so when restic deletes old data during a prune, B2 just hides it — and keeps billing for it. restic does its own versioning, so it doesn't need B2's.
+3. Create an **application key restricted to that one bucket**. Backblaze shows the secret only once.
+
+### Adding the repository in Backrest
+
+- **Repository URI:** `s3:s3.<region>.backblazeb2.com/<bucket>` (restic talks to B2 through its S3-compatible API).
+- **Password:** a new, long random password — this is restic's encryption password, not a Backblaze one. Generate it with `openssl rand -base64 32`.
+- **Env Vars:** the bucket's application key, as restic's S3 credentials:
+
+```text
+AWS_ACCESS_KEY_ID=<keyID>
+AWS_SECRET_ACCESS_KEY=<applicationKey>
+```
+
+The names say "AWS" because restic uses the same S3 protocol for every S3-compatible service.
+
+### Run Backrest as root
+
+My Backrest container was running as a regular user (`user: "1000:10"` in its compose file). Two problems with that:
+
+- **It can't read everything.** The nightly logs had `permission denied` warnings for files only their owner can read: Caddy's TLS private keys and the Beszel hub's SSH key. Those files were silently missing from the backup. Docker volumes are worse — Postgres keeps its data folder readable only by its own user.
+- **It can't restore ownership.** Only root can set a file's owner, so everything a non-root Backrest restores comes back owned by user 1000. Many containers need their files owned by a specific user; Postgres refuses to start if its data folder isn't owned by its own user.
+
+Removing the `user:` line from Backrest's compose file fixed both. Check with:
+
+{% raw %}
+```bash
+sudo docker inspect backrest --format 'user={{.Config.User}}'
+```
+{% endraw %}
+
+which should print `user=` with nothing after it. As root, Backrest can read and write the whole NAS, so its web UI needs a login (it has one) and should only be reachable on my home network and Tailscale.
+
+Note that recreating the Backrest container cancels any backup in progress ("Operation was incomplete when orchestrator was restarted"). That's recoverable — run the backup again and restic skips the data it already uploaded — but it has to re-read every file on disk to find out what that is.
+
+### The daily plan
+
+- **Paths:** `/userdata`
+- **Schedule:** cron `0 3 * * *`, local time. The Linux machine's own restic backup to the NAS runs at 02:00, so each night's upload includes that night's backup.
+- **Retention:** 7 daily, 4 weekly, 6 monthly snapshots.
+- **Excludes**, in this order:
+
+```text
+/userdata/jellyfin/data/media/movies
+/userdata/jellyfin/data/media/tv
+/userdata/jellyfin/data/torrents
+/userdata/time-machine
+*/#recycle
+/userdata/docker/immich/postgres
+/userdata/@*
+!/userdata/@docker
+/userdata/@docker/*
+!/userdata/@docker/volumes
+```
+
+Line by line:
+
+- **Movies, TV and torrents** (about 4 TB) are replaceable, so they stay out of the daily offsite copy.
+- **Time Machine** (about 2.3 TB) stays local on purpose. It's for fast, whole-machine restores of the Mac; the Mac's offsite copy is its own restic backup to the NAS, which this plan *does* include.
+- **`*/#recycle`** skips every share's recycle bin.
+- **Immich's live Postgres folder** is skipped because copying a running database's files can produce a broken copy. Instead, Immich dumps its database every night at 02:00 into `<library>/backups/`, inside the photo library folder, and those dumps are backed up. Immich restores from them, not from the raw folder.
+- **The last four lines** skip UGOS's system folders (all named `@something`) and Docker's images and containers, but keep **`@docker/volumes`** — the data for every container that uses a Docker-managed volume. That covers apps added later automatically, without having to remember to back up each one.
+
+The `!` lines are restic's negated patterns: a pattern starting with `!` cancels an earlier exclusion, like `.gitignore`. As with `.gitignore`, once a folder is excluded nothing inside it can be added back, which is why `@docker` has to be re-included before `@docker/*` is excluded and `@docker/volumes` re-included. Order matters.
+
+The daily plan covers about 1.7 TB and 3.3 million files, and a typical night uploads around 0.5 GB of changes in about half an hour.
+
+### What's in the daily backup, and what isn't
+
+| Data | In the daily backup? |
+|---|---|
+| Documents, music, synced folders, other shares | Yes |
+| The Linux machine's (and soon the Mac's) restic repositories | Yes |
+| Immich photos and videos | Yes |
+| Immich database (albums, people, faces) | Yes, via the nightly dumps |
+| Docker compose files, `.env` files and bind-mounted app data under `/volume1/docker` | Yes |
+| Data in Docker-managed volumes | Yes |
+| Movies, TV, torrents | No — by design |
+| Time Machine | No — by design |
+
+### The full migration plan
+
+When I need everything on the NAS to survive a wipe — in my case, converting the volume from RAID 1 to RAID 0 — a second plan backs up nearly everything to a separate bucket:
+
+- **Paths:** `/userdata`
+- **Schedule:** disabled; it only runs on **Backup Now**.
+- **Retention:** keep the last 1 snapshot.
+- **Excludes:**
+
+```text
+*/#recycle
+/userdata/docker/immich/postgres
+/userdata/time-machine
+/userdata/@*
+!/userdata/@docker
+/userdata/@docker/*
+!/userdata/@docker/volumes
+```
+
+Time Machine is excluded here too; after the wipe, the Mac just starts a fresh Time Machine backup. That leaves about 5.7 TB.
+
+Why a separate repository in a separate bucket, rather than a second plan on the daily repository:
+
+- **The daily backup is never at risk.** The repository holding my irreplaceable files takes no part in the migration or its clean-up.
+- **Clean-up is simple.** When the migration is done, I delete the plan and the repository in Backrest, empty and delete the bucket, and delete its application key.
+- **The cost:** a separate repository can't share stored data with the daily one, so the ~1.7 TB of files is uploaded a second time.
+
+Two things I learned running it:
+
+- **Backrest runs one operation at a time.** While the multi-day first upload runs, the daily plan's runs queue behind it ("scheduled, waiting"). That's an acceptable gap for a few days, but worth knowing.
+- **Upload time is the real constraint.** 5.7 TB takes days on a home connection, and restoring it means downloading it all again. A USB drive attached to the NAS as a local Backrest repository would be much faster, if you have one big enough. I didn't.
+
+### Doing the migration
+
+1. Run the full plan once, with everything running, to get the bulk of the data uploaded.
+2. Right before the wipe: stop Watchtower (so nothing updates, Immich included), stop every container except Backrest, and run the full plan again. It only uploads what changed, so it's quick, and the databases are copied while nothing is writing to them.
+3. Browse that final snapshot and test-restore samples to a scratch folder: a document folder, an app's data from `@docker/volumes`, the newest Immich database dump and one movie.
+4. Wipe and convert the volume, reinstall Docker and Backrest, add the full migration repository back to Backrest, and restore.
+5. For Docker volumes: stop Docker, restore the whole `@docker/volumes` folder (Docker's record of which volumes exist, `metadata.db`, lives inside it), then start Docker before running `docker compose up`.
+6. For Immich: restore onto the **same Immich version** the dumps were made with. The version is in the dump's filename (for example `immich-db-backup-…-v2.7.5-pg14.19.sql.gz`), so pin that version in Immich's compose file for the rebuild and update afterwards.
+7. Delete the migration plan, repository and bucket.
+
+> **TODO:** results of the migration — upload time, the test restore, and how the rebuild went.
+
+### Restoring without the NAS
+
+Backrest runs on the NAS, so after a wipe — or if the NAS dies — Backrest's own settings are gone too. Restoring needs, from somewhere other than the NAS:
+
+- each repository's restic password,
+- each bucket's name, region and application key.
+
+My password manager is Vaultwarden, which *also* runs on this NAS. The Bitwarden apps keep an offline copy of the vault, but I keep a second copy of these specific secrets somewhere off the NAS as well, so a dead NAS can't lock me out of the backup of the NAS.
+
+Any machine with restic installed can read the repositories directly, without Backrest:
+
+```bash
+export AWS_ACCESS_KEY_ID=<keyID>
+export AWS_SECRET_ACCESS_KEY=<applicationKey>
+restic -r s3:s3.<region>.backblazeb2.com/<bucket> snapshots
+```
+
+> **TODO:** add a Healthchecks check for the nightly Backrest upload, using a Backrest hook, so the offsite side is monitored too.
 
 ## Mac to NAS
 
