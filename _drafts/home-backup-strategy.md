@@ -423,16 +423,20 @@ Note that recreating the Backrest container cancels any backup in progress ("Ope
 - **Excludes**, in this order:
 
 ```text
+/userdata/@*
 /userdata/jellyfin/data/media/movies
 /userdata/jellyfin/data/media/tv
 /userdata/jellyfin/data/torrents
 /userdata/time-machine
 */#recycle
 /userdata/docker/immich/postgres
-/userdata/@*
 !/userdata/@docker
 /userdata/@docker/*
 !/userdata/@docker/volumes
+**/node_modules
+**/.venv
+**/__pycache__
+**/.cache
 ```
 
 Line by line:
@@ -441,7 +445,8 @@ Line by line:
 - **Time Machine** (about 2.3 TB) stays local on purpose. It's for fast, whole-machine restores of the Mac; the Mac's offsite copy is its own restic backup to the NAS, which this plan *does* include.
 - **`*/#recycle`** skips every share's recycle bin.
 - **Immich's live Postgres folder** is skipped because copying a running database's files can produce a broken copy. Instead, Immich dumps its database every night at 02:00 into `<library>/backups/`, inside the photo library folder, and those dumps are backed up. Immich restores from them, not from the raw folder.
-- **The last four lines** skip UGOS's system folders (all named `@something`) and Docker's images and containers, but keep **`@docker/volumes`** — the data for every container that uses a Docker-managed volume. That covers apps added later automatically, without having to remember to back up each one.
+- **The `@` lines** skip UGOS's system folders (all named `@something`) and Docker's images and containers, but keep **`@docker/volumes`** — the data for every container that uses a Docker-managed volume. That covers apps added later automatically, without having to remember to back up each one.
+- **`node_modules`, `.venv`, `__pycache__` and `.cache`**, anywhere on the NAS, are build and package folders that can be regenerated from the project files, and they add a lot of small files for no benefit.
 
 The `!` lines are restic's negated patterns: a pattern starting with `!` cancels an earlier exclusion, like `.gitignore`. As with `.gitignore`, once a folder is excluded nothing inside it can be added back, which is why `@docker` has to be re-included before `@docker/*` is excluded and `@docker/volumes` re-included. Order matters.
 
@@ -477,9 +482,13 @@ When I need everything on the NAS to survive a wipe — in my case, converting t
 !/userdata/@docker
 /userdata/@docker/*
 !/userdata/@docker/volumes
+**/node_modules
+**/.venv
+**/__pycache__
+**/.cache
 ```
 
-Time Machine is excluded here too; after the wipe, the Mac just starts a fresh Time Machine backup. That leaves about 5.7 TB.
+Time Machine is excluded here too; after the wipe, the Mac just starts a fresh Time Machine backup. So are the build and package folders, which can be regenerated. That leaves about 5.7 TB.
 
 Why a separate repository in a separate bucket, rather than a second plan on the daily repository:
 
