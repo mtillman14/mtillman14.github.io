@@ -1,0 +1,491 @@
+%
+%Academic CV LaTeX Template
+% Author: Dubasi Pavan Kumar
+% LinkedIn: https://www.linkedin.com/in/im-pavankumar/
+% License: MIT
+%
+% For errors, suggestions, or improvements, please contact:
+% Email: pavankumard.pg19.ma@nitp.ac.in
+%
+
+
+
+\documentclass[letterpaper,11pt]{article}
+
+% Package imports
+\usepackage{latexsym}
+\usepackage{xcolor}
+\usepackage{float}
+\usepackage{ragged2e}
+\usepackage[empty]{fullpage}
+\usepackage{wrapfig}
+\usepackage{lipsum}
+\usepackage{tabularx}
+\usepackage{titlesec}
+\usepackage{geometry}
+\usepackage{marvosym}
+\usepackage{verbatim}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{multicol}
+\usepackage{graphicx}
+\usepackage{cfr-lm}
+\usepackage[T1]{fontenc}
+\usepackage{fontawesome5}
+\usepackage{gensymb}%for the degree symbol
+
+% Color definitions
+\definecolor{darkblue}{RGB}{0,0,139}
+
+% Page layout
+\setlength{\multicolsep}{0pt}
+\pagestyle{fancy}
+\fancyhf{} % clear all header and footer fields
+\fancyfoot{}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+\geometry{left=1.4cm, top=0.8cm, right=1.2cm, bottom=1cm}
+\setlength{\footskip}{5pt} % Addressing fancyhdr warning
+
+% Hyperlink setup (moved after fancyhdr to address warning)
+% Links are colored (not hidden) so readers can see what's clickable in the PDF
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=darkblue,
+    filecolor=darkblue,
+    urlcolor=darkblue,
+}
+
+% Custom box settings
+\usepackage[most]{tcolorbox}
+\tcbset{
+    frame code={},
+    center title,
+    left=0pt,
+    right=0pt,
+    top=0pt,
+    bottom=0pt,
+    colback=gray!20,
+    colframe=white,
+    width=\dimexpr\textwidth\relax,
+    enlarge left by=-2mm,
+    boxsep=4pt,
+    arc=0pt,outer arc=0pt,
+}
+
+% URL style
+\urlstyle{same}
+
+% Text alignment
+\raggedright
+\setlength{\tabcolsep}{0in}
+
+% Section formatting
+\titleformat{\section}{
+  \vspace{-4pt}\scshape\raggedright\large
+}{}{0em}{}[\color{black}\titlerule \vspace{-7pt}]
+
+% Custom commands
+\newcommand{\resumeItem}[2]{
+  \item{
+    \textbf{#1}{\hspace{0.5mm}#2 \vspace{-0.5mm}}
+  }
+}
+
+\newcommand{\resumePOR}[3]{
+\vspace{0.5mm}\item
+    \begin{tabular*}{0.97\textwidth}[t]{l@{\extracolsep{\fill}}r}
+        \textbf{#1}\hspace{0.3mm}#2 & \textit{\small{#3}}
+    \end{tabular*}
+    \vspace{-2mm}
+}
+
+\newcommand{\resumeSubheading}[4]{
+\vspace{0.5mm}\item
+    \begin{tabular*}{0.98\textwidth}[t]{l@{\extracolsep{\fill}}r}
+        \textbf{#1} & \textit{\footnotesize{#4}} \\
+        \textit{\footnotesize{#3}} &  \footnotesize{#2}\\
+    \end{tabular*}
+    \vspace{-2.4mm}
+}
+
+% Education entry: {institution}{location}{degree}{date}{GPA}
+% GPA sits right-aligned under the location instead of taking its own bullet line
+\newcommand{\resumeEducation}[5]{
+\vspace{0.5mm}\item
+    \begin{tabular*}{0.98\textwidth}[t]{l@{\extracolsep{\fill}}r}
+        \textbf{#1} & \textit{\footnotesize{#4}} \\
+        \textit{\footnotesize{#3}} & \footnotesize{\begin{tabular}[t]{@{}r@{}}#2\\#5\end{tabular}}\\
+    \end{tabular*}
+    \vspace{-1mm}
+}
+
+\newcommand{\resumeProject}[4]{
+\vspace{0.5mm}\item
+    \begin{tabular*}{0.98\textwidth}[t]{l@{\extracolsep{\fill}}r}
+        \textbf{#1} & \textit{\footnotesize{#3}} \\
+        \footnotesize{\textit{#2}} & \footnotesize{#4}
+    \end{tabular*}
+    \vspace{-2.4mm}
+}
+
+% Reference entry: {name}{title}{institution}{email}{phone}{relationship}
+\newcommand{\resumeReference}[6]{%
+\begin{tabular}[t]{@{}l@{}}
+\textbf{#1}\\
+#2\\
+#3\\
+Email: \href{mailto:#4}{#4}\\
+Phone: #5\\
+\textit{Relationship: #6}
+\end{tabular}%
+}
+
+\newcommand{\resumeSubItem}[2]{\resumeItem{#1}{#2}\vspace{-4pt}}
+
+\renewcommand{\labelitemi}{$\vcenter{\hbox{\tiny$\bullet$}}$}
+\renewcommand{\labelitemii}{$\vcenter{\hbox{\tiny$\circ$}}$}
+
+\newcommand{\resumeSubHeadingListStart}{\begin{itemize}[leftmargin=*,labelsep=1mm]}
+\newcommand{\resumeHeadingSkillStart}{\begin{itemize}[leftmargin=*,itemsep=1.7mm, rightmargin=2ex]}
+\newcommand{\resumeItemListStart}{\begin{itemize}[leftmargin=*,labelsep=1mm,itemsep=0.5mm]}
+
+\newcommand{\resumeSubHeadingListEnd}{\end{itemize}\vspace{2mm}}
+\newcommand{\resumeHeadingSkillEnd}{\end{itemize}\vspace{-2mm}}
+\newcommand{\resumeItemListEnd}{\end{itemize}\vspace{-2mm}}
+\newcommand{\cvsection}[1]{%
+\vspace{2mm}
+\begin{tcolorbox}
+    \textbf{\large #1}
+\end{tcolorbox}
+    \vspace{-4mm}
+}
+
+\newcolumntype{L}{>{\raggedright\arraybackslash}X}%
+\newcolumntype{R}{>{\raggedleft\arraybackslash}X}%
+\newcolumntype{C}{>{\centering\arraybackslash}X}%
+
+% Commands for icon sizing and positioning
+\newcommand{\socialicon}[1]{\raisebox{-0.05em}{\resizebox{!}{1em}{#1}}}
+\newcommand{\ieeeicon}[1]{\raisebox{-0.3em}{\resizebox{!}{1.3em}{#1}}}
+
+% Font options
+\newcommand{\headerfonti}{\fontfamily{phv}\selectfont} % Helvetica-like (similar to Arial/Calibri)
+\newcommand{\headerfontii}{\fontfamily{ptm}\selectfont} % Times-like (similar to Times New Roman)
+\newcommand{\headerfontiii}{\fontfamily{ppl}\selectfont} % Palatino (elegant serif)
+\newcommand{\headerfontiv}{\fontfamily{pbk}\selectfont} % Bookman (readable serif)
+\newcommand{\headerfontv}{\fontfamily{pag}\selectfont} % Avant Garde-like (similar to Trebuchet MS)
+\newcommand{\headerfontvi}{\fontfamily{cmss}\selectfont} % Computer Modern Sans Serif
+\newcommand{\headerfontvii}{\fontfamily{qhv}\selectfont} % Quasi-Helvetica (another Arial/Calibri alternative)
+\newcommand{\headerfontviii}{\fontfamily{qpl}\selectfont} % Quasi-Palatino (another elegant serif option)
+\newcommand{\headerfontix}{\fontfamily{qtm}\selectfont} % Quasi-Times (another Times New Roman alternative)
+\newcommand{\headerfontx}{\fontfamily{bch}\selectfont} % Charter (clean serif font)
+
+\begin{document}
+\headerfontiii
+
+% Header
+\begin{center}
+    {\Huge\textbf{Mitchell Tillman, PhD}}
+\end{center}
+\vspace{-6mm}
+
+\begin{center}
+    \small{
+    +1-847-687-3787 | \href{mailto:mtillman14@gmail.com}{mtillman14@gmail.com}
+    }
+\end{center}
+\vspace{-6mm}
+
+\begin{center}
+    \small{
+    \socialicon{\faGlobe} \href{https://www.mitchelltillman.com}{mitchelltillman.com} |
+    \socialicon{\faLinkedin} \href{https://www.linkedin.com/in/mitchelltillman/}{mitchelltillman} |
+    \socialicon{\faGithub} \href{https://github.com/mtillman14}{mtillman14} |
+    \ieeeicon{\includegraphics[height=1.3em]{matlab_icon.png}} \href{https://www.mathworks.com/matlabcentral/profile/authors/16297861}{Mitchell Tillman}
+    }
+\end{center}
+\vspace{-6mm}
+\begin{center}
+    \small{Chicago, IL USA 60610}
+\end{center}
+
+\vspace{-4mm}
+
+\section{\textbf{Objective}}
+\vspace{1mm}
+% \input{intros/general}
+% \input{intros/oakland_as}
+% \input{intros/biomechanics}
+% \input{intros/biomechanics_postdoc}
+\input{intros/hospital_biomechanist}
+% \input{intros/abbott_data_science}
+\vspace{-2mm}
+
+\section{\textbf{Experience}}
+\vspace{-0.4mm}
+\resumeSubHeadingListStart
+
+\resumeSubheading
+  {Shirley Ryan AbilityLab}{Chicago, IL USA}
+  {Postdoctoral Research Fellow, Center for Bionic Medicine}{2024 -- Present}
+\resumeItemListStart
+  \item Study the effects of transcutaneous spinal cord stimulation (tSCS) on gait in people with stroke and traumatic brain injury in Dr. Arun Jayaraman's lab
+  \item Provide technical expertise to the Tech Immersion clinic, collecting and analyzing sensor data (EMG, IMU) to inform care for medically complex patients
+  \item Assist the team implementing tSCS into hospital-wide standard clinical practice for spinal cord injury patients by informing stimulator device selection, designing clinician education, monitoring rollout operations, and analyzing clinical tSCS outcomes
+  \item Deliver tSCS treatment to spinal cord injury patients in the Tech Immersion program
+  \item Co-authored three journal articles in 2026, including a first-author article in \textit{Neuromodulation}
+\resumeItemListEnd
+
+\resumeSubheading
+  {Stevens Institute of Technology}{Hoboken, NJ USA}
+  {Graduate Research Assistant, MSKCD Lab}{2019 -- 2024}
+\resumeItemListStart
+  \item Dissertation research with Dr. Antonia Zaferiou quantifying balance and momentum control during 90\degree~turns while walking in healthy young and older adults
+  \item Collected motion capture and force plate data on over 50 young and older adult participants walking and turning
+  \item Developed a MATLAB data analysis pipeline for custom analyses based on person-specific biomechanical models, including bespoke visualizations and data-driven videos. Designed the pipeline to handle large data volumes by minimizing the data held in memory
+  \item Led three first-author journal articles from experiment design through data analysis and manuscript writing
+\resumeItemListEnd
+
+\resumeSubheading
+  {Purdue University}{West Lafayette, IN USA}
+  {Research Assistant, Biomechanics Lab}{2016 -- 2018}
+\resumeItemListStart
+  \item Studied motor control of manual dexterity with Dr. Satyajit Ambike in the Department of Health \& Kinesiology
+  \item Helped design and conduct experiments to understand the effect of anticipation on stability in a finger force-production task, acquiring force transducer data and analyzing movement variability.
+  \item First-authored three journal articles from this work
+\resumeItemListEnd
+
+\resumeSubHeadingListEnd
+\vspace{-6mm}
+
+\section{\textbf{Education}}
+\vspace{-0.4mm}
+\resumeSubHeadingListStart
+
+\resumeEducation
+{Stevens Institute of Technology}{Hoboken, NJ USA}
+{\parbox[t]{0.7\linewidth}{Ph.D. Mechanics of Whole-Body Balance and Momentum Control During \newline Straight-Line Gait and 90\degree~Turns}}{Oct 2024}{GPA: 4.00/4.00}
+
+\resumeEducation
+{Purdue University}{West Lafayette, IN USA}
+{\parbox[t]{0.8\linewidth}{M.S. Effects of Past and Future Motor Events on Present Motor Stability, \newline and Relationships with Motor and Cognitive Flexibility}}{May 2019}{GPA: 3.59/4.00}
+
+\resumeEducation
+{Purdue University}{West Lafayette, IN USA}
+{B.S. Movement \& Sports Sciences}{May 2018}{GPA: 3.12/4.00}
+
+\resumeSubHeadingListEnd
+\vspace{-6mm}
+
+\section{\textbf{Projects}}
+\vspace{-0.4mm}
+\resumeSubHeadingListStart
+
+\resumeProject
+  {SciStack: Scientific data processing infrastructure (beta)}
+  {Tools: Python, MATLAB, DuckDB, VS Code extension}
+  {Sep 2021 -- Present}
+  {{}\href{https://github.com/mtillman14/scistack}{\textcolor{darkblue}{\faGithub}}}
+\resumeItemListStart
+  \item Open-source framework providing the infrastructure to power researchers' existing Python or MATLAB analysis functions, so researchers can focus more on their science, and less on the code around the science
+  \item Unique approach saves all data with its provenance (function, inputs, and settings), tracking settings and data versions instead of overwriting old results.
+  \item Supports Python and MATLAB, even in the same project
+  \item Implements common quality-of-life and time-saving features like missing data inventories, excluding outlier data, an auditable trail tracing a result back to the data it came from
+  \item VS Code extension shows the pipeline as an interactive diagram with run controls, plotting, and statistics all built-in.
+\resumeItemListEnd
+
+\resumeProject
+  {Development of real-time auditory biofeedback to assist balance}
+  {Tools: MATLAB, OptiTrack motion capture, MaxMSP, Open Sound Control networking protocol}
+  {2019 -- 2022}
+  {}
+\resumeItemListStart
+  \item Developed the first prototype of a system that converts motion capture data to audio in real time ($\sim$20 ms latency)
+  \item Tested older adults' understanding and device usability qualitatively with surveys and interviews
+  \item In pilot testing (n=5), three young adults improved one-legged standing balance with vs. without the device
+\resumeItemListEnd
+
+% \resumeProject
+%   {Split-belt treadmill symmetry index return to baseline calculations}
+%   {Tools: MATLAB}
+%   {}
+%   {}
+% \resumeItemListStart
+%   \item I analyzed the "symmetry index" data (measures left and right step length similarity) that Dr. Ray Lin at Seton Hall University collected on older adults walking on a split-belt treadmill
+%   \item My responsibilities were to identify the features in the symmetry index timeseries to establish when the left and right belt speeds diverged, and to quantify how many steps it took for the symmetry index to return to plateau
+% \resumeItemListEnd
+
+\resumeSubHeadingListEnd
+
+\section{\textbf{Selected Publications}}
+\vspace{0.2mm}
+\small{
+\begin{enumerate}[leftmargin=*, labelsep=0.5em, align=left, widest={[\textbf{S.1}]}, itemindent=0em, label={\textbf{[\arabic*]}]}]
+\item[\textbf{[1]}] \textbf{Tillman M}, et al. (2026). \href{https://doi.org/10.1016/j.neurom.2026.09.018}{\textbf{Acute effects of transcutaneous spinal cord stimulation (tSCS) on gait symmetry in people with chronic stroke}}. \textit{Neuromodulation}, DOI: 10.1016/j.neurom.2026.09.018
+
+\item[\textbf{[2]}] Kishta A, Khazanchi R, Veit N, \textbf{Tillman M}, et al. (2026). \href{https://doi.org/10.1159/000552236}{\textbf{Multimodal machine learning to personalize transcutaneous spinal cord stimulation for stroke rehabilitation}}. \textit{Digital Biomarkers}, DOI: 10.1159/000552236
+
+\item[\textbf{[3]}] Veit NC, et al., \textbf{Tillman M}, et al. (2026). \href{https://doi.org/10.1152/jn.00500.2025}{\textbf{The effects of electrode configuration and location on motor thresholds, tolerance, and muscle selectivity of transcutaneous spinal cord stimulation in stroke}}. \textit{J. Neurophysiol.}, DOI: 10.1152/jn.00500.2025
+
+\item[\textbf{[4]}] \textbf{Tillman M}, et al. (2024). \href{https://doi.org/10.1186/s12984-024-01437-3}{\textbf{Healthy older adults generate transverse-plane momenta required for 90 degree turns during the same phases of gait as in straight-line gait}}. \textit{J. NeuroEng. Rehabil.}, 21:145, DOI: 10.1186/s12984-024-01437-3
+
+% \item[\textbf{[5]}] \textbf{Tillman M}, et al. (2020). \href{https://dl.acm.org/doi/10.1145/3401956.3404244}{\textbf{Real-time optical motion capture balance sonification system}}. \textit{ACM Int. Conf. Proc. Series}, DOI: 10.1145/3401956.3404244
+
+% \item[\textbf{[5]}] \textbf{Tillman M}, et al. (2022). \href{https://doi.org/10.1016/j.jbiomech.2022.111206}{\textbf{Frontal plane balance during pre-planned and late-cued 90 degree turns while walking}}. \textit{J. Biomech.}, DOI: 10.1016/j.jbiomech.2022.111206
+
+% \item[\textbf{[5]}] \textbf{Tillman M}, et al. (2018). \href{https://doi.org/10.1007/s00221-018-5333-0}{\textbf{Expectation of movement generates contrasting changes in multifinger synergies in young and older adults}}. \textit{Exp. Brain Res.}, DOI: 10.1007/s00221-018-5333-0
+\end{enumerate}
+Full publication list: \href{https://www.mitchelltillman.com/publications/}{mitchelltillman.com/publications}
+}
+
+\section{\textbf{Skills}}
+\vspace{-0.4mm}
+ \resumeHeadingSkillStart
+  \resumeSubItem{Programming Languages (in order of experience):}
+    {MATLAB, Python, R, SQL, bash}
+  \resumeSubItem{Databases \& Version Control:}
+    {SQLite, DuckDB, Git, GitHub}
+  \resumeSubItem{Statistics:}
+    {Regression, ANOVA, k-means cluster analysis, linear mixed models}
+  \resumeSubItem{Lab \& Clinical Technology:}
+    {OptiTrack motion capture, force plates, transcutaneous spinal cord stimulation (tSCS), electromyography (Delsys), inertial measurement units (XSENS), DeepLabCut (markerless motion capture), DeepLabCut Live, MaxMSP}
+  \resumeSubItem{Research:}
+    {Experiment design, research study management, data collection, clinical data analysis, pipeline development, biomechanics}
+  \resumeSubItem{Clinical \& Leadership:}
+    {Working with patients, clinically-relevant analyses, team management}
+ \resumeHeadingSkillEnd
+
+\section{\textbf{Honors and Awards}}
+\vspace{-0.4mm}
+\resumeSubHeadingListStart
+
+\resumeProject
+  {Doctoral Excellence Fellowship}
+  {Stevens Institute of Technology}
+  {May 2023}
+  {}
+\resumeItemListStart
+  \item Full tuition and stipend awarded for one academic year based on excellence in activities through the Ph.D. program
+\resumeItemListEnd
+
+% \resumeProject
+%   {Robert Crooks Stanley Fellowship}
+%   {Robert Crooks Stanley Graduate Fellowship Committee}
+%   {Aug 2022}
+%   {{}\href{https://www.stevens.edu/academics/graduate-study/graduate-funding/assistantships-and-fellowships\#scholarships-fellowships}{\textcolor{darkblue}{\faIcon{globe}}}}
+% \resumeItemListStart
+%   \item Awarded to researchers exhibiting the qualities of industrialism upheld by the committee
+% \resumeItemListEnd
+
+\resumeProject
+  {Outstanding Masters Student in the College of Health and Human Sciences}
+  {Purdue University}
+  {May 2019}
+  {}
+\resumeItemListStart
+  \item \$500 awarded for outstanding achievements in original research
+\resumeItemListEnd
+
+\resumeSubHeadingListEnd
+
+\vspace{-6mm}
+\section{\textbf{Leadership Experience}}
+\vspace{-0.4mm}
+\resumeSubHeadingListStart
+\resumeProject
+  {Project Team Lead}
+  {NJ Governor's STEM Scholars}
+  {Sep 2021 -- May 2022}
+  {{}\href{https://www.govstemscholars.com/scholars}{\textcolor{darkblue}{\faIcon{globe}}}}
+\resumeItemListStart
+  \item Led a team of 10 high school students in designing, implementing, and testing a real-time auditory biofeedback system to improve balance using open-source software
+  \item Integrated DeepLabCut Live into the system in collaboration with Dr. Gary Kane, one of its core developers
+\resumeItemListEnd
+
+\resumeProject
+  {Secretary, Graduate Biomedical Engineering Society}
+  {Stevens Institute of Technology}
+  {Aug 2021 -- Aug 2022}
+  {{}\href{https://ducklink.stevens.edu/gbmes/home/}{\textcolor{darkblue}{\faIcon{globe}}}}
+\resumeItemListStart
+  \item Instituted biweekly graduate student-led department seminars that are still ongoing
+  \item Hosted career development events for the BME department, including negotiating funding from the school for food and external speakers
+\resumeItemListEnd
+
+\resumeSubHeadingListEnd
+
+\vspace{-6mm}
+
+\section{\textbf{Volunteer Experience}}
+\vspace{-0.4mm}
+\resumeSubHeadingListStart
+\resumeProject
+  {Student Committee Member}
+  {American Society of Biomechanics (ASB)}
+  {2022 -- 2024}
+  {{}\href{https://asbweb.org}{\textcolor{darkblue}{\faIcon{globe}}}}
+\resumeItemListStart
+  \item Helped plan the student-oriented sessions at the international ASB conference, such as roundtable discussions and student meetups
+  \item Secured \$5,000 sponsorship from OptiTrack for two consecutive years for the student night out at the conference
+\resumeItemListEnd
+
+\resumeProject
+  {National Biomechanics Day}
+  {The Biomechanics Initiative at Stevens Institute of Technology}
+  {2020 -- 2023}
+  {{}\href{https://thebiomechanicsinitiative.org}{\textcolor{darkblue}{\faIcon{globe}}}}
+\resumeItemListStart
+  \item Introduced middle and high school students to biomechanics through interactive activities, such as dancing with EMG sensors to visualize muscle activity
+\resumeItemListEnd
+
+\resumeSubHeadingListEnd
+\vspace{-6mm}
+
+\section{\textbf{Professional Memberships}}
+\vspace{-0.4mm}
+\resumeSubHeadingListStart
+\resumePOR{American Society of Biomechanics}
+    {}
+    {2017 -- 2024}
+\resumePOR{International Society of Posture \& Gait Research}
+    {}
+    {2023 -- 2024}
+\resumePOR{Graduate Biomedical Engineering Society}
+    {}
+    {2021 -- 2022}
+\resumePOR{Society for Neuroscience}
+    {}
+    {2019, 2023}
+
+\resumeSubHeadingListEnd
+\vspace{-6mm}
+
+\section{\textbf{References}}
+\vspace{-0.2mm}
+\small{
+\begin{tabularx}{\textwidth}{@{}LL@{}}
+\resumeReference{Dr. Antonia Zaferiou}
+  {Assistant Professor, Biomedical Engineering}
+  {Stevens Institute of Technology}
+  {antonia.zaferiou@stevens.edu}{+1-201-216-3662}{Ph.D. Supervisor}
+&
+\resumeReference{Dr. Satyajit Ambike}
+  {Associate Professor, Health \& Kinesiology}
+  {Purdue University}
+  {sambike@purdue.edu}{+1-614-209-8407}{M.S. Supervisor}
+\\[4mm]
+\resumeReference{Dr. Sean Sanford}
+  {Senior Test Engineer}
+  {Medtronic}
+  {sean.sanford2@medtronic.com}{+1-480-824-8167}{Former Colleague}
+&
+\resumeReference{Nathaniel Bechhofer}
+  {CEO}
+  {FormToFile}
+  {nathanielbechhofer@trovbase.com}{+1-845-570-1518}{Mentor and Industry Collaborator}
+\end{tabularx}
+}
+
+\end{document}
